@@ -27,12 +27,18 @@ public class GamePlay : MonoBehaviour
         {
             Debug.LogError("Set Buttons");
         }
-        InitializeGame();
-        AddListeners();
-        ResetAll();
+        
 
 
     } 
+
+
+    public void StartGame()
+    {
+        InitializeGame();
+        AddListeners();
+        ResetAll();
+    }
 
     // Update is called once per frame
     void Update()
@@ -53,7 +59,7 @@ public class GamePlay : MonoBehaviour
                 buttonArray[j, k].interactable = true;
                 OArray[j, k].SetActive(false);
                 XArray[j, k].SetActive(false);
-                currentPlayer = Random.Range(1, 2);
+                currentPlayer = Random.Range(1, 3);
             }
         }
 
@@ -226,13 +232,15 @@ public class GamePlay : MonoBehaviour
 
     private void SwithPlayer()
     {
-        if(currentPlayer == 0)
+        if(currentPlayer == 1)
         {
-            currentPlayer = 1;
+            currentPlayer = 2;
+            Debug.Log("CurrentPlayer " + currentPlayer);
         }
         else
         {
-            currentPlayer = 0;
+            currentPlayer = 1;
+            Debug.Log("CurrentPlayer " + currentPlayer);
         }
     }
                 
