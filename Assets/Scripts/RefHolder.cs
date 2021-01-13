@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class RefHolder : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static RefHolder instance;
+    private void Awake()
     {
-        
+        if(instance == null)
+        {
+            instance = this;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+    public GamePlay gamePlay;
+    public PlayerInput playerInput;
+    
 }
