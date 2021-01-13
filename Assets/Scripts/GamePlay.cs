@@ -10,6 +10,11 @@ public class GamePlay : MonoBehaviour
     [SerializeField]
     private List<Transform> buttonTransforms;
 
+    private List<Transform> winningButtonTransforms = new List<Transform>();
+    private bool takeInput = false;
+    public bool isWon = false;
+    private bool isCountdownOn;
+    private float coutdownTimer;
 
     private Button[,] buttonArray = new Button[3,3];
     private GameObject[,] OArray = new GameObject[3,3];
@@ -17,7 +22,7 @@ public class GamePlay : MonoBehaviour
 
     private int[,] board = new int[3,3]; // 0 - Empty , 1 - O , 2 - X
 
-    private int currentPlayer;
+    public int currentPlayer;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +43,8 @@ public class GamePlay : MonoBehaviour
         InitializeGame();
         AddListeners();
         ResetAll();
+        takeInput = true;
+        StartCountDown();
     }
 
     // Update is called once per frame
@@ -60,10 +67,11 @@ public class GamePlay : MonoBehaviour
                 OArray[j, k].SetActive(false);
                 XArray[j, k].SetActive(false);
                 currentPlayer = Random.Range(1, 3);
+                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
             }
         }
 
-        
+        coutdownTimer = 0;
     }
 
 
@@ -98,6 +106,7 @@ public class GamePlay : MonoBehaviour
                 XArray[j, k] = buttonTransforms[i++].GetChild(1).gameObject;
             }
         }
+        
     }
 
     private void AddListeners()
@@ -119,31 +128,36 @@ public class GamePlay : MonoBehaviour
     {
         Debug.Log("ButtonCLicked " + j + " " + k);
         //RefHolder.instance.playerInput.buttonClick(j, k);
-
-        if(board[j,k] == 0)
+        if (takeInput)
         {
-            board[j, k] = currentPlayer;
-            buttonArray[j, k].interactable = false;
-            switch (currentPlayer)
+            if (board[j, k] == 0)
             {
-                case 1:
-                    OArray[j, k].SetActive(true);
-                    WinCheck();
-                    DrawCheck();
-                    SwithPlayer();
-                    break;
-                case 2:
-                    XArray[j, k].SetActive(true);
-                    WinCheck();
-                    DrawCheck();
-                    SwithPlayer();
-                    break;
-                default:
-                    break;
+                board[j, k] = currentPlayer;
+                buttonArray[j, k].interactable = false;
+                switch (currentPlayer)
+                {
+                    case 1:
+                        OArray[j, k].SetActive(true);
+                        WinCheck();
+                        DrawCheck();
+                        SwithPlayer();
+                        break;
+                    case 2:
+                        XArray[j, k].SetActive(true);
+                        WinCheck();
+                        DrawCheck();
+                        SwithPlayer();
+                        break;
+                    default:
+                        break;
+
+                }
 
             }
-            
         }
+        
+        
+        
 
     }
 
@@ -152,6 +166,7 @@ public class GamePlay : MonoBehaviour
     private void WinCheck()
     {
         int tmp = 0;
+        winningButtonTransforms.Clear();
         for (int j = 0; j < 3; j++)
         {
             for (int k = 0; k < 3; k++)
@@ -159,10 +174,16 @@ public class GamePlay : MonoBehaviour
                 if(board[j,k] == currentPlayer)
                 {
                     tmp++;
-                    if(tmp == 3)
+                    winningButtonTransforms.Add(buttonArray[j, k].transform);
+                    if (tmp == 3)
                     {
                         Debug.Log("Player " + currentPlayer + " Wins");
+                        EndMatch(true);
                     }
+                }
+                else
+                {
+                    winningButtonTransforms.Clear();
                 }
             }
             tmp = 0;
@@ -174,10 +195,16 @@ public class GamePlay : MonoBehaviour
                 if (board[j, k] == currentPlayer)
                 {
                     tmp++;
+                    winningButtonTransforms.Add(buttonArray[j, k].transform);
                     if (tmp == 3)
                     {
                         Debug.Log("Player " + currentPlayer + " Wins");
+                        EndMatch(true);
                     }
+                }
+                else
+                {
+                    winningButtonTransforms.Clear();
                 }
             }
             tmp = 0;
@@ -187,11 +214,18 @@ public class GamePlay : MonoBehaviour
             if (board[i, i] == currentPlayer)
             {
                 tmp++;
+                winningButtonTransforms.Add(buttonArray[i,i].transform);
                 if (tmp == 3)
                 {
                     Debug.Log("Player " + currentPlayer + " Wins");
+                    EndMatch(true);
                 }
             }
+            else
+            {
+                winningButtonTransforms.Clear();
+            }
+            
         }
         tmp = 0;
 
@@ -200,10 +234,16 @@ public class GamePlay : MonoBehaviour
             if (board[2-k, k] == currentPlayer)
             {
                 tmp++;
+                winningButtonTransforms.Add(buttonArray[2 - k, k].transform);
                 if (tmp == 3)
                 {
                     Debug.Log("Player " + currentPlayer + " Wins");
+                    EndMatch(true);
                 }
+            }
+            else
+            {
+                winningButtonTransforms.Clear();
             }
         }
 
@@ -213,21 +253,27 @@ public class GamePlay : MonoBehaviour
 
     private void DrawCheck()
     {
-        bool check = true;
-        for (int j = 0; j < 3; j++)
+        if (!isWon)
         {
-            for (int k = 0; k < 3; k++)
+            bool check = true;
+            for (int j = 0; j < 3; j++)
             {
-                if (board[j, k] == 0)
+                for (int k = 0; k < 3; k++)
                 {
-                    check = false;
+                    if (board[j, k] == 0)
+                    {
+                        check = false;
+                    }
                 }
             }
+            if (check == true)
+            {
+
+                Debug.Log("Match Draw");
+                EndMatch(false);
+            }
         }
-        if(check == true)
-        {
-            Debug.Log("Match Draw");
-        }
+        
     }
 
     private void SwithPlayer()
@@ -236,12 +282,95 @@ public class GamePlay : MonoBehaviour
         {
             currentPlayer = 2;
             Debug.Log("CurrentPlayer " + currentPlayer);
+            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+            StartCountDown();
         }
         else
         {
             currentPlayer = 1;
             Debug.Log("CurrentPlayer " + currentPlayer);
+            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+            StartCountDown();
         }
     }
-                
+
+    private void EndMatch(bool endStatus)
+    {
+        //win
+        if (endStatus)
+        {
+            isWon = true;
+            RefHolder.instance.uICon.SetMatchEndStatusText("Player "+currentPlayer+" Won");
+            StartCoroutine(WinAnimation());
+        }
+        else // draw
+        {
+            RefHolder.instance.uICon.SetMatchEndStatusText("Match Draw");
+            RefHolder.instance.uICon.animCon.GamePanelOut();
+            RefHolder.instance.uICon.animCon.EndPanelIn();
+        }
+        isCountdownOn = false;
+        StopCoroutine(CoutDown());
+    }
+
+    private void EndMatchCountdown()
+    {
+        isWon = true;
+        SwithPlayer();
+        RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+        RefHolder.instance.uICon.animCon.GamePanelOut();
+        RefHolder.instance.uICon.animCon.EndPanelIn();
+    }
+
+    IEnumerator WinAnimation()
+    {
+        takeInput = false;
+        for(int i = 0;i < winningButtonTransforms.Count; i++)
+        {
+            winningButtonTransforms[i].GetComponent<Animator>().SetTrigger("Flash");
+        }
+        yield return new WaitForSeconds(1f);
+        RefHolder.instance.uICon.animCon.GamePanelOut();
+        RefHolder.instance.uICon.animCon.EndPanelIn();
+        //takeInput = false;
+    }
+
+
+
+    public void StartCountDown()
+    {
+        if(!isCountdownOn)
+        {
+            coutdownTimer = 5f;
+            isCountdownOn = true;
+            StartCoroutine(CoutDown());
+        }
+        else
+        {
+            coutdownTimer = 5f;
+        }
+    }
+
+    IEnumerator CoutDown()
+    {
+
+        while (coutdownTimer > 0)
+        {
+            yield return new WaitForSeconds(0.1f);
+            coutdownTimer -= 0.1f;
+            RefHolder.instance.uICon.timerText.text = coutdownTimer.ToString("0.0");
+        }
+        coutdownTimer = 0f;
+        isCountdownOn = false;
+        takeInput = false;
+        EndMatchCountdown();
+
+    }
+
+
+    #region AI
+
+
+    #endregion
+
 }

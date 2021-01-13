@@ -2,26 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UICon : MonoBehaviour
 {
 
     public UIAnimCon animCon;
 
+    public bool takeInput;
+    
 
-
+    [Header("MainPanel")]
     public Button startBut;
     public Button optionsBut;
     public Button exitBut;
 
-    public Text playerText;
-    public Text timerText;
+    [Header("GamePanel")]
+    public TextMeshProUGUI playerText;
+    public TextMeshProUGUI timerText;
+
+
+    [Header("EndPanel")]
+    public Button startButEnd;
+    public Button optionsButEnd;
+    public Button exitButEnd;
+    public TextMeshProUGUI matchEndStatus;
 
     private void Start()
     {
         exitBut.onClick.AddListener(() => ExitButPress());
         startBut.onClick.AddListener(() => StartButPress());
         optionsBut.onClick.AddListener(() => OptionsButPress());
+        exitButEnd.onClick.AddListener(() => ExitButPressEnd());
+        startButEnd.onClick.AddListener(() => StartButPressEnd());
+        optionsButEnd.onClick.AddListener(() => OptionsButPressEnd());
     }
 
 
@@ -35,7 +49,7 @@ public class UICon : MonoBehaviour
     }
     IEnumerator LateStart()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         RefHolder.instance.gamePlay.StartGame();
     }
     private void ExitButPress()
@@ -47,6 +61,26 @@ public class UICon : MonoBehaviour
 
     }
 
+    private void StartButPressEnd()
+    {
+        animCon.EndPanelOut();
+        animCon.GamePanelIn();
+        StartCoroutine(LateStartEnd());
+    }
+    IEnumerator LateStartEnd()
+    {
+        yield return new WaitForSeconds(0.3f);
+        RefHolder.instance.gamePlay.StartGame();
+    }
+    private void ExitButPressEnd()
+    {
+        Application.Quit();
+    }
+    private void OptionsButPressEnd()
+    {
+
+    }
+
 
     public void SetPlayerText(string txt)
     {
@@ -54,20 +88,11 @@ public class UICon : MonoBehaviour
     }
 
 
-    public void StartCountDown(float time)
-    {
-        StartCoroutine(CoutDown(time));
-    }
+    
 
-    IEnumerator CoutDown(float time)
+    public void SetMatchEndStatusText(string txt)
     {
-
-        while(time > 0)
-        {
-            yield return new WaitForSeconds(0.1f);
-            time -= 0.1f;
-            timerText.text = time.ToString("0.0");
-        }
+        matchEndStatus.text = txt;
     }
 
 }

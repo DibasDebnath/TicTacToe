@@ -16,5 +16,6 @@ public class RefHolder : MonoBehaviour
 
     public GamePlay gamePlay;
     public PlayerInput playerInput;
+    public UICon uICon;
     
 }
