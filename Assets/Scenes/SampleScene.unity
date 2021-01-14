@@ -713,6 +713,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 437843360}
   m_CullTransparentMesh: 1
+--- !u!1 &494644204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 494644206}
+  - component: {fileID: 494644205}
+  m_Layer: 0
+  m_Name: AudioController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &494644205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494644204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd651e9227419604a89b166ec52ff4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - audioClipName: GameMusic
+    audioClip: {fileID: 8300000, guid: 54c724d16ef52a540ae45d494cf6e47c, type: 3}
+    volume: 1
+    pitch: 1
+    isSound: 0
+    isMusic: 1
+    isLoop: 0
+    audioSource: {fileID: 0}
+  MusicOn: {fileID: 0}
+  MusicOff: {fileID: 0}
+--- !u!4 &494644206
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494644204}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1527.5023, y: 1194.8492, z: -3362.0554}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &508381616
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2561,6 +2615,7 @@ MonoBehaviour:
   gamePlay: {fileID: 1462668597}
   playerInput: {fileID: 1462668598}
   uICon: {fileID: 1462668599}
+  audioController: {fileID: 494644205}
 --- !u!114 &1462668597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2583,7 +2638,8 @@ MonoBehaviour:
   - {fileID: 170815461}
   - {fileID: 1029697352}
   - {fileID: 1791649092}
-  isWon: 0
+  AIMode: 1
+  isMatchEnd: 0
   currentPlayer: 1
 --- !u!114 &1462668598
 MonoBehaviour:

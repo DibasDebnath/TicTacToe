@@ -10,10 +10,12 @@ public class GamePlay : MonoBehaviour
     [SerializeField]
     private List<Transform> buttonTransforms;
 
+    public bool AIMode;
+
     private List<Transform> winningButtonTransforms = new List<Transform>();
     private bool takeInput = false;
-    public bool isWon = false;
-    private bool isCountdownOn;
+    public bool isMatchEnd = false;
+    private Coroutine CountDownCor;
     private float coutdownTimer;
 
     private Button[,] buttonArray = new Button[3,3];
@@ -32,18 +34,25 @@ public class GamePlay : MonoBehaviour
         {
             Debug.LogError("Set Buttons");
         }
-        
 
+        InitializeGame();
+        AddListeners();
 
     } 
 
 
     public void StartGame()
     {
-        InitializeGame();
-        AddListeners();
+        
         ResetAll();
-        takeInput = true;
+        if (AIMode && currentPlayer == 2)
+        {
+            AIInput();
+        }
+        else
+        {
+            takeInput = true;
+        }
         StartCountDown();
     }
 
@@ -66,11 +75,23 @@ public class GamePlay : MonoBehaviour
                 buttonArray[j, k].interactable = true;
                 OArray[j, k].SetActive(false);
                 XArray[j, k].SetActive(false);
-                currentPlayer = Random.Range(1, 3);
-                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+                
             }
         }
-
+        currentPlayer = Random.Range(1, 3);
+        if (AIMode == true && currentPlayer == 2)
+        {
+            RefHolder.instance.uICon.playerText.text = "AI Turn";
+        }
+        else if (AIMode == true && currentPlayer == 1)
+        {
+            RefHolder.instance.uICon.playerText.text = "Your Turn";
+        }
+        else
+        {
+            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+        }
+        isMatchEnd = false;
         coutdownTimer = 0;
     }
 
@@ -139,14 +160,27 @@ public class GamePlay : MonoBehaviour
                     case 1:
                         OArray[j, k].SetActive(true);
                         WinCheck();
-                        DrawCheck();
-                        SwithPlayer();
+                        if (!isMatchEnd)
+                        {
+                            DrawCheck();
+                        }
+                        if (!isMatchEnd)
+                        {
+                            SwithPlayer();
+                        }
+                        
                         break;
                     case 2:
                         XArray[j, k].SetActive(true);
                         WinCheck();
-                        DrawCheck();
-                        SwithPlayer();
+                        if (!isMatchEnd)
+                        {
+                            DrawCheck();
+                        }
+                        if (!isMatchEnd)
+                        {
+                            SwithPlayer();
+                        }
                         break;
                     default:
                         break;
@@ -253,27 +287,26 @@ public class GamePlay : MonoBehaviour
 
     private void DrawCheck()
     {
-        if (!isWon)
+
+        bool check = true;
+        for (int j = 0; j < 3; j++)
         {
-            bool check = true;
-            for (int j = 0; j < 3; j++)
+            for (int k = 0; k < 3; k++)
             {
-                for (int k = 0; k < 3; k++)
+                if (board[j, k] == 0)
                 {
-                    if (board[j, k] == 0)
-                    {
-                        check = false;
-                    }
+                    check = false;
                 }
             }
-            if (check == true)
-            {
-
-                Debug.Log("Match Draw");
-                EndMatch(false);
-            }
         }
-        
+        if (check == true)
+        {
+
+            Debug.Log("Match Draw");
+            EndMatch(false);
+        }
+
+
     }
 
     private void SwithPlayer()
@@ -281,26 +314,68 @@ public class GamePlay : MonoBehaviour
         if(currentPlayer == 1)
         {
             currentPlayer = 2;
+            if (AIMode)
+            {
+                RefHolder.instance.uICon.playerText.text = "AI Turn";
+            }
+            else
+            {
+                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+            }
             Debug.Log("CurrentPlayer " + currentPlayer);
-            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+
+            
             StartCountDown();
+
+
+            if (AIMode)
+            {
+                // call ai here;
+                AIInput();
+            }
+            
+
         }
         else
         {
             currentPlayer = 1;
+            if(AIMode)
+            {
+                RefHolder.instance.uICon.playerText.text = "Your Turn";
+            }
+            else
+            {
+                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+            }
             Debug.Log("CurrentPlayer " + currentPlayer);
-            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+            
             StartCountDown();
         }
     }
 
     private void EndMatch(bool endStatus)
     {
+        isMatchEnd = true;
+        coutdownTimer = 0f;
+        //Debug.LogError("asdad");
+            StopCoroutine(CountDownCor);
+            CountDownCor = null;
+        
         //win
         if (endStatus)
         {
-            isWon = true;
-            RefHolder.instance.uICon.SetMatchEndStatusText("Player "+currentPlayer+" Won");
+            if(AIMode && currentPlayer == 2)
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+            }
+            else if (AIMode && currentPlayer == 1)
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("You Won");
+            }
+            else
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+            }
             StartCoroutine(WinAnimation());
         }
         else // draw
@@ -309,15 +384,33 @@ public class GamePlay : MonoBehaviour
             RefHolder.instance.uICon.animCon.GamePanelOut();
             RefHolder.instance.uICon.animCon.EndPanelIn();
         }
-        isCountdownOn = false;
-        StopCoroutine(CoutDown());
+        
+        
+        
     }
 
     private void EndMatchCountdown()
     {
-        isWon = true;
-        SwithPlayer();
-        RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+        
+        StopCoroutine(CountDownCor);
+        CountDownCor = null;
+        isMatchEnd = true;
+        if (currentPlayer == 1)
+        {
+            currentPlayer = 2;            
+        }
+        else
+        {
+            currentPlayer = 1;          
+        }
+        if (AIMode && currentPlayer == 2)
+        {
+            RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+        }
+        else
+        {
+            RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+        }
         RefHolder.instance.uICon.animCon.GamePanelOut();
         RefHolder.instance.uICon.animCon.EndPanelIn();
     }
@@ -339,11 +432,10 @@ public class GamePlay : MonoBehaviour
 
     public void StartCountDown()
     {
-        if(!isCountdownOn)
+        if (CountDownCor == null)
         {
             coutdownTimer = 5f;
-            isCountdownOn = true;
-            StartCoroutine(CoutDown());
+            CountDownCor = StartCoroutine(CoutDown());
         }
         else
         {
@@ -361,7 +453,7 @@ public class GamePlay : MonoBehaviour
             RefHolder.instance.uICon.timerText.text = coutdownTimer.ToString("0.0");
         }
         coutdownTimer = 0f;
-        isCountdownOn = false;
+        //Debug.LogError("as "+coutdownTimer);
         takeInput = false;
         EndMatchCountdown();
 
@@ -370,6 +462,69 @@ public class GamePlay : MonoBehaviour
 
     #region AI
 
+
+    private void AIInput()
+    {
+        takeInput = false;
+
+
+        StartCoroutine(lateAIInput());
+
+    }
+
+    IEnumerator lateAIInput()
+    {
+        int[] input = GetInputAI();
+        yield return new WaitForSeconds(Random.Range(0.5f, 2f));
+        takeInput = true;
+        ButtonClick(input[0], input[1]);
+        
+    }
+
+
+    private int[] GetInputAI()
+    {
+
+        int j;
+        int k;
+
+        int[] tmp = new int[2];
+
+        bool gotInput = false;
+
+        for(int i = 0; i<50; i++)
+        {
+            j = Random.Range(0, 3);
+            k = Random.Range(0, 3);
+
+            if (board[j,k] == 0)
+            {
+                tmp[0] = j;
+                tmp[1] = k;
+                gotInput = true;
+                break;
+
+            }
+        }
+        if (!gotInput)
+        {
+            for (j = 0; j < 3; j++)
+            {
+                for (k = 0; k < 3; k++)
+                {
+                    if (board[j, k] == 0)
+                    {
+                        tmp[0] = j;
+                        tmp[1] = k;
+                        gotInput = true;
+                    }
+                }
+            }
+        }
+        
+        return tmp;
+
+    }
 
     #endregion
 

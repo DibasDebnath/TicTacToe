@@ -36,6 +36,10 @@ public class UICon : MonoBehaviour
         exitButEnd.onClick.AddListener(() => ExitButPressEnd());
         startButEnd.onClick.AddListener(() => StartButPressEnd());
         optionsButEnd.onClick.AddListener(() => OptionsButPressEnd());
+
+
+
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.GameMusic, true);
     }
 
 
@@ -49,7 +53,7 @@ public class UICon : MonoBehaviour
     }
     IEnumerator LateStart()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         RefHolder.instance.gamePlay.StartGame();
     }
     private void ExitButPress()
@@ -69,7 +73,7 @@ public class UICon : MonoBehaviour
     }
     IEnumerator LateStartEnd()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         RefHolder.instance.gamePlay.StartGame();
     }
     private void ExitButPressEnd()
