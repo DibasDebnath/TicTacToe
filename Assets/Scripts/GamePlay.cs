@@ -151,8 +151,10 @@ public class GamePlay : MonoBehaviour
         //RefHolder.instance.playerInput.buttonClick(j, k);
         if (takeInput)
         {
+
             if (board[j, k] == 0)
             {
+                RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
                 board[j, k] = currentPlayer;
                 buttonArray[j, k].interactable = false;
                 switch (currentPlayer)

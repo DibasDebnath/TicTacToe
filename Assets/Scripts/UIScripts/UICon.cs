@@ -47,6 +47,7 @@ public class UICon : MonoBehaviour
 
     private void StartButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.MainMenuOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStart());
@@ -58,15 +59,17 @@ public class UICon : MonoBehaviour
     }
     private void ExitButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         Application.Quit();
     }
     private void OptionsButPress()
     {
-
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
 
     private void StartButPressEnd()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.EndPanelOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStartEnd());
@@ -78,11 +81,12 @@ public class UICon : MonoBehaviour
     }
     private void ExitButPressEnd()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         Application.Quit();
     }
     private void OptionsButPressEnd()
     {
-
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
 
 

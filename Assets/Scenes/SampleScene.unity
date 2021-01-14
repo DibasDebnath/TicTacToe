@@ -745,6 +745,14 @@ MonoBehaviour:
   sounds:
   - audioClipName: GameMusic
     audioClip: {fileID: 8300000, guid: 54c724d16ef52a540ae45d494cf6e47c, type: 3}
+    volume: 0.6
+    pitch: 1
+    isSound: 0
+    isMusic: 1
+    isLoop: 0
+    audioSource: {fileID: 0}
+  - audioClipName: Tap
+    audioClip: {fileID: 8300000, guid: 233af13039403a24fa349a5ba885123f, type: 3}
     volume: 1
     pitch: 1
     isSound: 0

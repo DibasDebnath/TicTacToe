@@ -12,6 +12,7 @@ public class AudioController : MonoBehaviour
     // Use this for initialization
 
     public readonly String GameMusic = "GameMusic";
+    public readonly String Tap = "Tap";
     
 
 
