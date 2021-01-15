@@ -7,19 +7,22 @@ using Firebase;
 public class PlayerScore : MonoBehaviour
 {
 
-    public TextMeshProUGUI ScoreText;
+    //public TextMeshProUGUI ScoreText;
 
 
     public int score;
     public string playerName;
     public string email;
     public string password;
+    public string ConPassword;
 
 
     public Button submit;
     public TextMeshProUGUI nameTxt;
     public TextMeshProUGUI emailTxt;
     public TextMeshProUGUI passwordTxt;
+    public TextMeshProUGUI ConPasswordTxt;
+    public TextMeshProUGUI ErrorTxt;
 
     private void Awake()
     {
@@ -29,8 +32,8 @@ public class PlayerScore : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        score = Random.Range(0, 100);
-        ScoreText.text = score.ToString("0");
+        //score = Random.Range(0, 100);
+        //ScoreText.text = score.ToString("0");
     }
 
 
@@ -39,9 +42,17 @@ public class PlayerScore : MonoBehaviour
         playerName = nameTxt.text;
         email = emailTxt.text;
         password = passwordTxt.text;
+        ConPassword = ConPasswordTxt.text;
+
+        if(password == ConPassword)
+        {
+            //CreateNewUserWithEmail();
+        }
+
+        SignInAnon();
 
 
-        PostToDatabase();
+
     }
     // Update is called once per frame
     void Update()
@@ -51,8 +62,17 @@ public class PlayerScore : MonoBehaviour
 
 
 
-    public void PostToDatabase()
+    public void SignInWithEmail()
     {
         
+    }
+    public void SignInAnon()
+    {
+        FirebaseController.instance.AnonSignIn();
+    }
+
+    public void CreateNewUserWithEmail()
+    {
+        FirebaseController.instance.CreateUserWithEmail(email,password);
     }
 }
