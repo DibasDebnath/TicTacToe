@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Firebase;
 using Firebase.Auth;
+using Google;
 
 public class FirebaseController : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class FirebaseController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CheckDep();
+        CheckFirebaseDependencies();
         if (auth == null)
         {
             auth = FirebaseAuth.DefaultInstance;
@@ -60,25 +61,98 @@ public class FirebaseController : MonoBehaviour
             }
 
             // Firebase user has been created.
-            Firebase.Auth.FirebaseUser newUser = task.Result;
+            user = task.Result;
             Debug.LogFormat("Firebase user created successfully: {0} ({1})",
-                newUser.DisplayName, newUser.UserId);
+                user.DisplayName, user.UserId);
+
+
         });
 
-        Debug.Log(auth.CurrentUser);
+        //Debug.Log(auth.CurrentUser);
         return null;
     }
 
 
-    public string SignInWIthGoogle()
+    public void VarifyEmail()
     {
-        
+        if (user != null)
+        {
 
+            Debug.Log(user.Email);
+            user.SendEmailVerificationAsync().ContinueWith(task => {
+                if (task.IsCanceled)
+                {
+                    Debug.LogError("SendEmailVerificationAsync was canceled.");
+                    return;
+                }
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("SendEmailVerificationAsync encountered an error: " + task.Exception);
+                    return;
+                }
+
+                Debug.Log("Email sent successfully.");
+            });
+        }
+    }
+
+    public void SignInWithEnmail(string email, string password)
+    {
+
+    }
+
+
+    public string SignInWithGoogle(string googleIdToken , string googleAccessToken)
+    {
+
+        Firebase.Auth.Credential credential =
+        Firebase.Auth.GoogleAuthProvider.GetCredential(googleIdToken, googleAccessToken);
+        auth.SignInWithCredentialAsync(credential).ContinueWith(task => {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInWithCredentialAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            user = task.Result;
+            Debug.LogFormat("User signed in successfully: {0} ({1})",
+                user.DisplayName, user.UserId);
+        });
 
         return null;
     }
 
+    public void updateDesplayName(string name)
+    {
+        user = auth.CurrentUser;
+        if (user != null)
+        {
+            Firebase.Auth.UserProfile profile = new Firebase.Auth.UserProfile
+            {
+                DisplayName = name,
+                //PhotoUrl = new System.Uri("https://example.com/jane-q-user/profile.jpg"),
+            };
+            user.UpdateUserProfileAsync(profile).ContinueWith(task => {
+                if (task.IsCanceled)
+                {
+                    Debug.LogError("UpdateUserProfileAsync was canceled.");
+                    return;
+                }
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("UpdateUserProfileAsync encountered an error: " + task.Exception);
+                    return;
+                }
 
+                Debug.Log("User profile updated successfully.");
+            });
+        }
+    }
 
 
     public string AnonSignIn()
@@ -98,6 +172,8 @@ public class FirebaseController : MonoBehaviour
             user = task.Result;
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 user.DisplayName, user.UserId);
+
+            
         });
 
 
@@ -106,30 +182,27 @@ public class FirebaseController : MonoBehaviour
     }
 
 
-  
-       
 
 
 
 
 
-    public void CheckDep()
+
+
+    private void CheckFirebaseDependencies()
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == Firebase.DependencyStatus.Available)
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            if (task.IsCompleted)
             {
-                // Create and hold a reference to your FirebaseApp,
-                // where app is a Firebase.FirebaseApp property of your application class.
-                app = Firebase.FirebaseApp.DefaultInstance;
-
-                // Set a flag here to indicate whether Firebase is ready to use by your app.
+                if (task.Result == DependencyStatus.Available)
+                    auth = FirebaseAuth.DefaultInstance;
+                else
+                    Debug.LogError("Could not resolve all Firebase dependencies: " + task.Result.ToString());
             }
             else
             {
-                UnityEngine.Debug.LogError(System.String.Format(
-                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
-                // Firebase Unity SDK is not safe to use here.
+                Debug.LogError("Dependency check was not completed. Error : " + task.Exception.Message);
             }
         });
     }

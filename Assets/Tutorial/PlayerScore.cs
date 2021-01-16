@@ -17,7 +17,8 @@ public class PlayerScore : MonoBehaviour
     public string ConPassword;
 
 
-    public Button submit;
+    public Button create;
+    public Button signIn;
     public TextMeshProUGUI nameTxt;
     public TextMeshProUGUI emailTxt;
     public TextMeshProUGUI passwordTxt;
@@ -26,7 +27,8 @@ public class PlayerScore : MonoBehaviour
 
     private void Awake()
     {
-        submit.onClick.AddListener(() => SubmitPress());
+        create.onClick.AddListener(() => SubmitPress());
+        signIn.onClick.AddListener(() => SignInAnon());
     }
 
     // Start is called before the first frame update
@@ -49,10 +51,20 @@ public class PlayerScore : MonoBehaviour
             //CreateNewUserWithEmail();
         }
 
-        SignInAnon();
+        //SignInAnon();
 
+        FirebaseController.instance.updateDesplayName(playerName);
 
+    }
 
+    public void SignInWithGoogle()
+    {
+        GoogleSignInDemo.instance.SignInWithGoogle();
+    }
+
+    public void Varify()
+    {
+        FirebaseController.instance.VarifyEmail();
     }
     // Update is called once per frame
     void Update()
