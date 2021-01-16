@@ -103,21 +103,29 @@ public class PlayerScore : MonoBehaviour
     {
         playerdata p = new playerdata();
 
-        p.email = "dibasdebnath@gmail.com";
-        p.match = 15;
-        p.win = 10;
-        p.lose = 5;
+        //p.email = "dibasdebnath@gmail.com";
+        p.match = "dibasdebnath@gmail.com";
+        //p.win = 10;
+        //p.lose = 5;
+
+        //string j = JsonUtility.ToJson(p);
+
+        //FirebaseDataCon.instance.pushData(j,null);
+
 
         string j = JsonUtility.ToJson(p);
 
         FirebaseDataCon.instance.pushData(j,null);
+
     }
 
 
 }
-public struct playerdata{
-    public string email;
-    public int match;
-    public int win;
-    public int lose;
-};
+public struct playerdata {
+    //public string email;
+    public string match;
+    //public int win;
+    //public int lose;
+}
+
+
