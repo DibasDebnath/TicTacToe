@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Firebase;
 using Firebase.Auth;
-using Google;
+using Firebase.Database;
 
 public class FirebaseController : MonoBehaviour
 {
@@ -11,7 +11,10 @@ public class FirebaseController : MonoBehaviour
 
     private FirebaseAuth auth;
     private FirebaseApp app;
+    public FirebaseDatabase database;
+    public DatabaseReference reference;
     private FirebaseUser user;
+
 
     private void Awake()
     {
@@ -32,6 +35,10 @@ public class FirebaseController : MonoBehaviour
         {
             auth = FirebaseAuth.DefaultInstance;
         }
+        
+        //reference = database.RootReference;
+        database = FirebaseDatabase.DefaultInstance;
+        reference = database.RootReference;
     }
 
     // Update is called once per frame
@@ -185,10 +192,6 @@ public class FirebaseController : MonoBehaviour
 
 
 
-
-
-
-
     private void CheckFirebaseDependencies()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
@@ -196,7 +199,10 @@ public class FirebaseController : MonoBehaviour
             if (task.IsCompleted)
             {
                 if (task.Result == DependencyStatus.Available)
-                    auth = FirebaseAuth.DefaultInstance;
+                {
+                    
+                }
+
                 else
                     Debug.LogError("Could not resolve all Firebase dependencies: " + task.Result.ToString());
             }

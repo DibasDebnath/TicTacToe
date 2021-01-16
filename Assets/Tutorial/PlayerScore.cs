@@ -27,7 +27,7 @@ public class PlayerScore : MonoBehaviour
 
     private void Awake()
     {
-        create.onClick.AddListener(() => SubmitPress());
+        create.onClick.AddListener(() => pushData());
         signIn.onClick.AddListener(() => SignInAnon());
     }
 
@@ -73,6 +73,8 @@ public class PlayerScore : MonoBehaviour
     }
 
 
+    
+
 
     public void SignInWithEmail()
     {
@@ -87,4 +89,35 @@ public class PlayerScore : MonoBehaviour
     {
         FirebaseController.instance.CreateUserWithEmail(email,password);
     }
+
+
+
+
+
+
+
+
+
+
+    public void pushData()
+    {
+        playerdata p = new playerdata();
+
+        p.email = "dibasdebnath@gmail.com";
+        p.match = 15;
+        p.win = 10;
+        p.lose = 5;
+
+        string j = JsonUtility.ToJson(p);
+
+        FirebaseDataCon.instance.pushData(j,null);
+    }
+
+
 }
+public struct playerdata{
+    public string email;
+    public int match;
+    public int win;
+    public int lose;
+};
