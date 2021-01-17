@@ -27,8 +27,8 @@ public class PlayerScore : MonoBehaviour
 
     private void Awake()
     {
-        create.onClick.AddListener(() => pushData());
-        signIn.onClick.AddListener(() => SignInAnon());
+        create.onClick.AddListener(() => startListener());
+        signIn.onClick.AddListener(() => stopListener());
     }
 
     // Start is called before the first frame update
@@ -55,6 +55,17 @@ public class PlayerScore : MonoBehaviour
 
         FirebaseController.instance.updateDesplayName(playerName);
 
+    }
+
+    
+
+    public void startListener()
+    {
+        FirebaseDataCon.instance.StartValueChangeListener();
+    }
+    public void stopListener()
+    {
+        FirebaseDataCon.instance.StopValueChangeListener();
     }
 
     public void SignInWithGoogle()
@@ -101,12 +112,15 @@ public class PlayerScore : MonoBehaviour
 
     public void pushData()
     {
-        playerdata p = new playerdata();
 
-        //p.email = "dibasdebnath@gmail.com";
-        p.match = "dibasdebnath@gmail.com";
-        //p.win = 10;
-        //p.lose = 5;
+        List<string> list = new List<string>();
+
+        list.Add("demo@gmail.com");
+        list.Add("demo2@gmail.com");
+
+        playerdata p = new playerdata("dibasdeb@gmail.com",null,0, list);
+
+       
 
         //string j = JsonUtility.ToJson(p);
 
@@ -115,17 +129,35 @@ public class PlayerScore : MonoBehaviour
 
         string j = JsonUtility.ToJson(p);
 
-        FirebaseDataCon.instance.pushData(j,null);
+        FirebaseDataCon.instance.pushUserData(j,null);
 
     }
 
 
+    public void getData()
+    {
+        FirebaseDataCon.instance.GetUserData("dibasdebnath@gmail.com");
+        
+    }
+
+
 }
-public struct playerdata {
-    //public string email;
-    public string match;
-    //public int win;
-    //public int lose;
+public class playerdata {
+    public string email;
+    public string displayName;
+    public int match;   
+    public List<string> friends = new List<string>();
+
+
+    public playerdata(string email,string displayName, int match, List<string> friends)
+    {
+        this.email = email;
+        this.match = match;
+        this.displayName = displayName;
+        this.friends = friends;
+        
+        
+    }
 }
 
 
