@@ -11,7 +11,7 @@ public class GoogleSignInDemo : MonoBehaviour
 {
     public static GoogleSignInDemo instance;
 
-    public TextMeshProUGUI infoText;
+    public string infoText;
     //private string webClientId = "624997912753-sfsdo0ttcvar33tdqcqijm6kdmukh70t.apps.googleusercontent.com";
     //private string webClientId = "624997912753-12etmmt6erqam1tk7c75thsufgvbknoh.apps.googleusercontent.com";
     private string webClientId = "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com";
@@ -56,7 +56,7 @@ public class GoogleSignInDemo : MonoBehaviour
         GoogleSignIn.DefaultInstance.Disconnect();
     }
 
-    internal void OnAuthenticationFinished(Task<GoogleSignInUser> task)
+    internal void OnAuthenticationFinished( Task<GoogleSignInUser> task)
     {
         if (task.IsFaulted)
         {
@@ -89,8 +89,8 @@ public class GoogleSignInDemo : MonoBehaviour
 
     private void SignInWithGoogleOnFirebase(string idToken)
     {
-        FirebaseController.instance.SignInWithGoogle(idToken, null);
-                
+        bool status = FirebaseController.instance.SignInWithGoogle(idToken, null);
+        Debug.Log("Sign In Status Return " + status);
     }
 
     public void OnSignInSilently()
@@ -114,5 +114,5 @@ public class GoogleSignInDemo : MonoBehaviour
         GoogleSignIn.DefaultInstance.SignIn().ContinueWith(OnAuthenticationFinished);
     }
 
-    private void AddToInformation(string str) { infoText.text += "\n" + str; }
+    private void AddToInformation(string str) { infoText += "\n" + str; }
 }

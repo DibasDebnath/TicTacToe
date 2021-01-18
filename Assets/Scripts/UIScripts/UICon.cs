@@ -13,7 +13,7 @@ public class UICon : MonoBehaviour
     
 
     [Header("MainPanel")]
-    public Button startBut;
+    public Button playBut;
     public Button optionsBut;
     public Button exitBut;
 
@@ -23,19 +23,33 @@ public class UICon : MonoBehaviour
 
 
     [Header("EndPanel")]
-    public Button startButEnd;
+    public Button playButEnd;
     public Button optionsButEnd;
     public Button exitButEnd;
     public TextMeshProUGUI matchEndStatus;
 
+
+    [Header("Play Options")]
+    public Button playLocalBut;
+    public Button playOnlineBut;
+    public Button playFriendsBut;
+    public Button playAIBut;
+    public Button playOptionsBack;
+
+
     private void Start()
     {
         exitBut.onClick.AddListener(() => ExitButPress());
-        startBut.onClick.AddListener(() => StartButPress());
+        playBut.onClick.AddListener(() => PlayButPress());
         optionsBut.onClick.AddListener(() => OptionsButPress());
         exitButEnd.onClick.AddListener(() => ExitButPressEnd());
-        startButEnd.onClick.AddListener(() => StartButPressEnd());
+        playButEnd.onClick.AddListener(() => StartButPressEnd());
         optionsButEnd.onClick.AddListener(() => OptionsButPressEnd());
+        playLocalBut.onClick.AddListener(() => PlayLocal());
+        playOnlineBut.onClick.AddListener(() => OptionsButPressEnd());
+        playFriendsBut.onClick.AddListener(() => OptionsButPressEnd());
+        playAIBut.onClick.AddListener(() => PlayAI());
+        playOptionsBack.onClick.AddListener(() => BackPlayOptions());
 
 
 
@@ -43,20 +57,16 @@ public class UICon : MonoBehaviour
     }
 
 
-
-
-    private void StartButPress()
+    #region MainMenu
+    private void PlayButPress()
     {
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.MainMenuOut();
-        animCon.GamePanelIn();
-        StartCoroutine(LateStart());
+        animCon.PlayOptionsIn();
+
+
     }
-    IEnumerator LateStart()
-    {
-        yield return new WaitForSeconds(0.2f);
-        RefHolder.instance.gamePlay.StartGame();
-    }
+
     private void ExitButPress()
     {
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
@@ -66,6 +76,66 @@ public class UICon : MonoBehaviour
     {
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
+
+    #endregion
+
+
+
+
+
+
+
+    #region PlayOptionsPanel
+
+
+    public void PlayLocal()
+    {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        RefHolder.instance.gamePlay.AIMode = false;
+        animCon.PlayOptionsOut();
+        animCon.GamePanelIn();
+        StartCoroutine(LateStartLocal());
+    }
+
+    public void PlayAI()
+    {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        RefHolder.instance.gamePlay.AIMode = true;
+        animCon.PlayOptionsOut();
+        animCon.GamePanelIn();
+        StartCoroutine(LateStartLocal());
+    }
+
+
+    IEnumerator LateStartLocal()
+    {
+        
+        yield return new WaitForSeconds(0.2f);
+        RefHolder.instance.gamePlay.StartGame();
+    }
+
+    public void BackPlayOptions()
+    {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+
+        animCon.MainMenuIn();
+        animCon.PlayOptionsOut();
+    }
+
+    #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+    #region EndScreen
 
     private void StartButPressEnd()
     {
@@ -89,18 +159,27 @@ public class UICon : MonoBehaviour
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
 
+    public void SetMatchEndStatusText(string txt)
+    {
+        matchEndStatus.text = txt;
+    }
+
+    #endregion
+
+    #region GamePanel
 
     public void SetPlayerText(string txt)
     {
         playerText.text = txt;
     }
 
+    #endregion
+
 
     
 
-    public void SetMatchEndStatusText(string txt)
-    {
-        matchEndStatus.text = txt;
-    }
+
+
+
 
 }
