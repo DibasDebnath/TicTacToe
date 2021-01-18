@@ -70,7 +70,7 @@ public class PlayerScore : MonoBehaviour
 
     public void SignInWithGoogle()
     {
-        GoogleSignInDemo.instance.SignInWithGoogle();
+       // GoogleSignInDemo.instance.SignInWithGoogle();
     }
 
     public void Varify()

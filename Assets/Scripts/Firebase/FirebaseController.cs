@@ -28,15 +28,17 @@ public class FirebaseController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CheckFirebaseDependencies();
         if (auth == null)
         {
             auth = FirebaseAuth.DefaultInstance;
         }
+        database = FirebaseDatabase.DefaultInstance;
+        CheckFirebaseDependencies();
+        
         
         //reference = database.RootReference;
-        database = FirebaseDatabase.DefaultInstance;
-        reference = database.RootReference;
+        //database = FirebaseDatabase.DefaultInstance;
+        //reference = database.RootReference;
     }
 
     // Update is called once per frame
@@ -196,15 +198,19 @@ public class FirebaseController : MonoBehaviour
 
     private void CheckFirebaseDependencies()
     {
+        
+        
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
+            //database = FirebaseDatabase.DefaultInstance;
+            
             var dependencyStatus = task.Result;
             if (dependencyStatus == DependencyStatus.Available)
             {
                 // Create and hold a reference to your FirebaseApp,
                 // where app is a Firebase.FirebaseApp property of your application class.
                 app = FirebaseApp.DefaultInstance;
-
+                database = FirebaseDatabase.DefaultInstance;
                 // Set a flag here to indicate whether Firebase is ready to use by your app.
             }
             else

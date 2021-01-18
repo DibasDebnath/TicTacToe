@@ -137,13 +137,6 @@ public class UICon : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
     #region EndScreen
 
     private void StartButPressEnd()

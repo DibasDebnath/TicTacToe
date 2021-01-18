@@ -861,7 +861,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 423191383}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5466f1563b3d25542bc3b94e803b78ed, type: 3}
+  m_Script: {fileID: 11500000, guid: 356d883caa8fa1f4dbcda41b2c902ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &423191385
@@ -887,7 +887,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 423191383}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e10865eee8261d146a6bdde6cb93157e, type: 3}
+  m_Script: {fileID: 11500000, guid: d654738d38b09db49af4a04fec16e796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   infoText: 
@@ -3704,7 +3704,7 @@ Animator:
   m_GameObject: {fileID: 1196896151}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2aa0005e7f2275a4d856539376333d1a, type: 2}
+  m_Controller: {fileID: 9100000, guid: e3f31fd4b424e4e49adf7ad54ef1ca8f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4122,6 +4122,9 @@ MonoBehaviour:
   playFriendsBut: {fileID: 429183211}
   playAIBut: {fileID: 1981251989}
   playOptionsBack: {fileID: 1752081190}
+  signInGoogleBut: {fileID: 1991895765}
+  signInAnonBut: {fileID: 234989660}
+  signbackBut: {fileID: 954181450}
 --- !u!114 &1462668600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4138,6 +4141,7 @@ MonoBehaviour:
   gamePanel: {fileID: 308008345}
   endPanel: {fileID: 1791661348}
   playOptionsPanel: {fileID: 1840459610}
+  signInPanel: {fileID: 1196896153}
 --- !u!1 &1463033503
 GameObject:
   m_ObjectHideFlags: 0
@@ -5590,7 +5594,7 @@ Animator:
   m_GameObject: {fileID: 1840459608}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3154f4d3e736f30438910a67d58b82e0, type: 2}
+  m_Controller: {fileID: 9100000, guid: 75a1162924b46b94fa96d980c9d7356c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

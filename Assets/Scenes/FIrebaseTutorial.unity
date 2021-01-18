@@ -1620,9 +1620,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1369993001}
   - component: {fileID: 1369993000}
-  - component: {fileID: 1369993002}
-  - component: {fileID: 1369993003}
-  - component: {fileID: 1369993004}
   m_Layer: 0
   m_Name: RefHolder
   m_TagString: Untagged
@@ -1639,21 +1636,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1369992999}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2de3f8ee6a435914c9a3f7450cf068c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 356d883caa8fa1f4dbcda41b2c902ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
-  playerName: 
-  email: 
-  password: 
-  ConPassword: 
-  create: {fileID: 185973802}
-  signIn: {fileID: 1931341587}
-  nameTxt: {fileID: 2041337485}
-  emailTxt: {fileID: 122477141}
-  passwordTxt: {fileID: 1760174102}
-  ConPasswordTxt: {fileID: 885322025}
-  ErrorTxt: {fileID: 2102165762}
 --- !u!4 &1369993001
 Transform:
   m_ObjectHideFlags: 0
@@ -1668,43 +1653,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1369993002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1369992999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf1e5c5918b07cd43815f0976480b790, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1369993003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1369992999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79f5e501ed528b74c94c7a822dc246ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  infoText: {fileID: 851277225}
---- !u!114 &1369993004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1369992999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8673931c72c8042459c8fd57d55f2f9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1414649726
 GameObject:
   m_ObjectHideFlags: 0
@@ -3066,8 +3014,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 618dd4714a6dd9e4094953b492f1817f, type: 2}
-  m_sharedMaterial: {fileID: 4552860375328107060, guid: 618dd4714a6dd9e4094953b492f1817f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3096,7 +3044,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 500
+  m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256

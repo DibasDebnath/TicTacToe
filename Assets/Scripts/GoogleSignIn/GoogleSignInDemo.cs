@@ -9,6 +9,9 @@ using TMPro;
 
 public class GoogleSignInDemo : MonoBehaviour
 {
+
+
+
     public static GoogleSignInDemo instance;
 
     public string infoText;
@@ -16,20 +19,20 @@ public class GoogleSignInDemo : MonoBehaviour
     //private string webClientId = "624997912753-12etmmt6erqam1tk7c75thsufgvbknoh.apps.googleusercontent.com";
     private string webClientId = "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com";
 
-    
+
     private GoogleSignInConfiguration configuration;
 
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
         configuration = new GoogleSignInConfiguration { WebClientId = webClientId, RequestEmail = true, RequestIdToken = true };
-        
+
     }
 
-   
+
 
     public void SignInWithGoogle() { OnSignIn(); }
     public void SignOutFromGoogle() { OnSignOut(); }
@@ -56,7 +59,7 @@ public class GoogleSignInDemo : MonoBehaviour
         GoogleSignIn.DefaultInstance.Disconnect();
     }
 
-    internal void OnAuthenticationFinished( Task<GoogleSignInUser> task)
+    internal void OnAuthenticationFinished(Task<GoogleSignInUser> task)
     {
         if (task.IsFaulted)
         {
@@ -115,4 +118,9 @@ public class GoogleSignInDemo : MonoBehaviour
     }
 
     private void AddToInformation(string str) { infoText += "\n" + str; }
+
+
+
+
+
 }
