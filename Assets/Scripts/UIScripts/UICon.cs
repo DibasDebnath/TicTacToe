@@ -37,6 +37,12 @@ public class UICon : MonoBehaviour
     public Button playOptionsBack;
 
 
+    [Header("Sign In Panel")]
+    public Button signInGoogleBut;
+    public Button signInAnonBut;
+    public Button signbackBut;
+
+
     private void Start()
     {
         exitBut.onClick.AddListener(() => ExitButPress());
@@ -50,6 +56,9 @@ public class UICon : MonoBehaviour
         playFriendsBut.onClick.AddListener(() => OptionsButPressEnd());
         playAIBut.onClick.AddListener(() => PlayAI());
         playOptionsBack.onClick.AddListener(() => BackPlayOptions());
+        signInGoogleBut.onClick.AddListener(() => SignInGoogleButPress());
+        signInAnonBut.onClick.AddListener(() => SignInAnonButPress());
+        signbackBut.onClick.AddListener(() => SignInBackButPress());
 
 
 
@@ -176,8 +185,30 @@ public class UICon : MonoBehaviour
     #endregion
 
 
-    
 
+    #region Sign In
+
+    public void SignInGoogleButPress()
+    {
+
+    }
+
+    public void SignInAnonButPress()
+    {
+        bool status = FirebaseController.instance.AnonSignIn();
+        if (status)
+        {
+
+        }
+    }
+
+
+    public void SignInBackButPress()
+    {
+
+    }
+
+    #endregion
 
 
 

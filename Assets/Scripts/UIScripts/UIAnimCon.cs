@@ -10,6 +10,7 @@ public class UIAnimCon : MonoBehaviour
     public Animator gamePanel; 
     public Animator endPanel; 
     public Animator playOptionsPanel; 
+    public Animator signInPanel; 
 
     // Start is called before the first frame update
     void Start()
@@ -55,5 +56,13 @@ public class UIAnimCon : MonoBehaviour
     public void PlayOptionsOut()
     {
         playOptionsPanel.SetTrigger("PanelOut");
+    }
+    public void SignInIn()
+    {
+        signInPanel.SetTrigger("PanelIn");
+    }
+    public void SignInOut()
+    {
+        signInPanel.SetTrigger("PanelOut");
     }
 }
