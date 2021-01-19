@@ -41,6 +41,7 @@ public class UICon : MonoBehaviour
     public Button signInGoogleBut;
     public Button signInAnonBut;
     public Button signbackBut;
+    public TextMeshProUGUI errorTxt;
 
 
     private void Start()
@@ -53,7 +54,7 @@ public class UICon : MonoBehaviour
         optionsButEnd.onClick.AddListener(() => OptionsButPressEnd());
         playLocalBut.onClick.AddListener(() => PlayLocal());
         playOnlineBut.onClick.AddListener(() => OptionsButPressEnd());
-        playFriendsBut.onClick.AddListener(() => OptionsButPressEnd());
+        playFriendsBut.onClick.AddListener(() => PlayFriends());
         playAIBut.onClick.AddListener(() => PlayAI());
         playOptionsBack.onClick.AddListener(() => BackPlayOptions());
         signInGoogleBut.onClick.AddListener(() => SignInGoogleButPress());
@@ -69,6 +70,11 @@ public class UICon : MonoBehaviour
     #region MainMenu
     private void PlayButPress()
     {
+        if (!takeInput)
+        {
+            return;
+        }
+            
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.MainMenuOut();
         animCon.PlayOptionsIn();
@@ -78,11 +84,19 @@ public class UICon : MonoBehaviour
 
     private void ExitButPress()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         Application.Quit();
     }
     private void OptionsButPress()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
 
@@ -99,6 +113,10 @@ public class UICon : MonoBehaviour
 
     public void PlayLocal()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.gamePlay.AIMode = false;
         animCon.PlayOptionsOut();
@@ -108,6 +126,10 @@ public class UICon : MonoBehaviour
 
     public void PlayAI()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.gamePlay.AIMode = true;
         animCon.PlayOptionsOut();
@@ -125,11 +147,30 @@ public class UICon : MonoBehaviour
 
 
 
+    public void PlayFriends()
+    {
+        if (!takeInput)
+        {
+            return;
+        }
+        if (FirebaseController.instance.user == null)
+        {
+            animCon.PlayOptionsOut();
+            animCon.SignInIn();
+        }
+        else
+        {
 
+        }
+    }
 
 
     public void BackPlayOptions()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
 
         animCon.MainMenuIn();
@@ -146,6 +187,10 @@ public class UICon : MonoBehaviour
 
     private void StartButPressEnd()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.EndPanelOut();
         animCon.GamePanelIn();
@@ -153,16 +198,25 @@ public class UICon : MonoBehaviour
     }
     IEnumerator LateStartEnd()
     {
+        
         yield return new WaitForSeconds(0.2f);
         RefHolder.instance.gamePlay.StartGame();
     }
     private void ExitButPressEnd()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         Application.Quit();
     }
     private void OptionsButPressEnd()
     {
+        if (!takeInput)
+        {
+            return;
+        }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
     }
 
@@ -188,22 +242,56 @@ public class UICon : MonoBehaviour
 
     public void SignInGoogleButPress()
     {
+        if (!takeInput)
+        {
+            return;
+        }
+        errorTxt.text = "connecting...";
+        GoogleSignInDemo.instance.SignInWithGoogle();
+        takeInput = false;
+        StartCoroutine(lateSignInCheck());
+    }
 
+    IEnumerator lateSignInCheck()
+    {
+        yield return new WaitForSeconds(3f);
+        if(FirebaseController.instance.user == null)
+        {
+            errorTxt.text = "Connection Error... Try Again";
+        }
+        else
+        {
+            RefHolder.instance.dataManager.SetUID(FirebaseController.instance.auth.CurrentUser.UserId);
+            takeInput = true;
+            animCon.PlayOptionsIn();
+            animCon.SignInOut();
+        }
     }
 
     public void SignInAnonButPress()
     {
-        bool status = FirebaseController.instance.AnonSignIn();
-        if (status)
+        if (!takeInput)
         {
-
+            return;
         }
+        errorTxt.text = "connecting...";
+        FirebaseController.instance.AnonSignIn();
+        takeInput = false;
+        StartCoroutine(lateSignInCheck());
+
     }
+
+    
 
 
     public void SignInBackButPress()
     {
-
+        if (!takeInput)
+        {
+            return;
+        }
+        animCon.PlayOptionsIn();
+        animCon.SignInOut();
     }
 
     #endregion

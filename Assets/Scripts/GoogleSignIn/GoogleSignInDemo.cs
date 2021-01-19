@@ -92,8 +92,8 @@ public class GoogleSignInDemo : MonoBehaviour
 
     private void SignInWithGoogleOnFirebase(string idToken)
     {
-        bool status = FirebaseController.instance.SignInWithGoogle(idToken, null);
-        Debug.Log("Sign In Status Return " + status);
+        FirebaseController.instance.SignInWithGoogle(idToken, null);
+        Debug.Log("Sign In UID ");
     }
 
     public void OnSignInSilently()

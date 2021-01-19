@@ -18,5 +18,6 @@ public class RefHolder : MonoBehaviour
     public PlayerInput playerInput;
     public UICon uICon;
     public AudioController audioController;
+    public PlayerDataManager dataManager;
     
 }

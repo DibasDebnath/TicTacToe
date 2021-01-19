@@ -13,7 +13,7 @@ public class GamePlay : MonoBehaviour
     public bool AIMode;
 
     private List<Transform> winningButtonTransforms = new List<Transform>();
-    private bool takeInput = false;
+    
     public bool isMatchEnd = false;
     private Coroutine CountDownCor;
     private float coutdownTimer;
@@ -51,7 +51,7 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
-            takeInput = true;
+            RefHolder.instance.uICon.takeInput = true;
         }
         StartCountDown();
     }
@@ -149,7 +149,7 @@ public class GamePlay : MonoBehaviour
     {
         Debug.Log("ButtonCLicked " + j + " " + k);
         //RefHolder.instance.playerInput.buttonClick(j, k);
-        if (takeInput)
+        if (RefHolder.instance.uICon.takeInput)
         {
 
             if (board[j, k] == 0)
@@ -419,7 +419,7 @@ public class GamePlay : MonoBehaviour
 
     IEnumerator WinAnimation()
     {
-        takeInput = false;
+        RefHolder.instance.uICon.takeInput = false;
         for(int i = 0;i < winningButtonTransforms.Count; i++)
         {
             winningButtonTransforms[i].GetComponent<Animator>().SetTrigger("Flash");
@@ -456,7 +456,7 @@ public class GamePlay : MonoBehaviour
         }
         coutdownTimer = 0f;
         //Debug.LogError("as "+coutdownTimer);
-        takeInput = false;
+        RefHolder.instance.uICon.takeInput = false;
         EndMatchCountdown();
 
     }
@@ -467,7 +467,7 @@ public class GamePlay : MonoBehaviour
 
     private void AIInput()
     {
-        takeInput = false;
+        RefHolder.instance.uICon.takeInput = false;
 
 
         StartCoroutine(lateAIInput());
@@ -478,7 +478,7 @@ public class GamePlay : MonoBehaviour
     {
         int[] input = GetInputAI();
         yield return new WaitForSeconds(Random.Range(0.5f, 2f));
-        takeInput = true;
+        RefHolder.instance.uICon.takeInput = true;
         ButtonClick(input[0], input[1]);
         
     }

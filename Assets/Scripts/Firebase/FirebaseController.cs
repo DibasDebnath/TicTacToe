@@ -9,11 +9,11 @@ public class FirebaseController : MonoBehaviour
 {
     public static FirebaseController instance;
 
-    private FirebaseAuth auth;
+    public FirebaseAuth auth;
     private FirebaseApp app;
     public FirebaseDatabase database;
     public DatabaseReference reference;
-    private FirebaseUser user;
+    public FirebaseUser user;
 
 
     private void Awake()
@@ -34,11 +34,12 @@ public class FirebaseController : MonoBehaviour
         }
         database = FirebaseDatabase.DefaultInstance;
         CheckFirebaseDependencies();
-        
-        
+
+        user = auth.CurrentUser;
         //reference = database.RootReference;
         //database = FirebaseDatabase.DefaultInstance;
         //reference = database.RootReference;
+        Debug.Log(auth.CurrentUser.UserId);
     }
 
     // Update is called once per frame
@@ -103,35 +104,38 @@ public class FirebaseController : MonoBehaviour
 
     public void SignInWithEnmail(string email, string password)
     {
+        
 
     }
 
 
-    public bool SignInWithGoogle(string googleIdToken , string googleAccessToken)
+    public void SignInWithGoogle(string googleIdToken , string googleAccessToken)
     {
-        bool status = false;
+        //string uid = " ";
 
         Credential credential = GoogleAuthProvider.GetCredential(googleIdToken, googleAccessToken);
         auth.SignInWithCredentialAsync(credential).ContinueWith(task => {
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInWithCredentialAsync was canceled.");
-                status = false;
+                
                 return;
             }
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
-                status = false;
+                
                 return;
             }
 
             user = task.Result;
-            status = true;
+            
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 user.DisplayName, user.UserId);
+
+            //auth.CurrentUser.
         });
-        return status;
+        
         
     }
 
@@ -163,33 +167,34 @@ public class FirebaseController : MonoBehaviour
     }
 
 
-    public bool AnonSignIn()
+    public void AnonSignIn()
     {
-        bool status = false;
+        
         auth.SignInAnonymouslyAsync().ContinueWith(task => {
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInAnonymouslyAsync was canceled.");
-                status = false;
+                
                 return;
             }
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInAnonymouslyAsync encountered an error: " + task.Exception);
-                status = false;
+                
                 return;
             }
-            status = true;
+            
             user = task.Result;
+            
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 user.DisplayName, user.UserId);
 
             
         });
 
-
+       
         //Debug.Log("as"+user.UserId);
-        return status;
+        
     }
 
 

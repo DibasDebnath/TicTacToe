@@ -16,13 +16,11 @@ public class PlayerDataManager : MonoBehaviour
 
     public void SetUID(string uid)
     {
-        if(PlayerPrefs.GetString(UID) != uid)
-        {
-            PlayerPrefs.SetString(uid, uid);
-        }
+        PlayerPrefs.SetString(UID, uid);
     }
     public string GetUID()
     {
+        
         return PlayerPrefs.GetString(UID, " ");
     }
 }
