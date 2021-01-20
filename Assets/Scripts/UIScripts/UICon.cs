@@ -42,7 +42,15 @@ public class UICon : MonoBehaviour
     public Button signInAnonBut;
     public Button signbackBut;
     public TextMeshProUGUI errorTxt;
+    public InputField nameInput;
 
+
+    [Header("Play Friends Panel")]
+    public Button joinRoomBut;
+    public Button createRoomBut;
+    public Button playFriendsbackBut;
+    public TextMeshProUGUI playFriendsErrorTxt;
+    public InputField roomCodeInput;
 
     private void Start()
     {
@@ -60,6 +68,9 @@ public class UICon : MonoBehaviour
         signInGoogleBut.onClick.AddListener(() => SignInGoogleButPress());
         signInAnonBut.onClick.AddListener(() => SignInAnonButPress());
         signbackBut.onClick.AddListener(() => SignInBackButPress());
+        joinRoomBut.onClick.AddListener(() => SignInGoogleButPress());
+        createRoomBut.onClick.AddListener(() => CreateRoonButPress());
+        playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
 
 
 
@@ -153,14 +164,20 @@ public class UICon : MonoBehaviour
         {
             return;
         }
-        if (FirebaseController.instance.user == null)
+        if (FirebaseController.instance.isSignedIn == false)
         {
             animCon.PlayOptionsOut();
+            if(RefHolder.instance.dataManager.GetDisplayName() != "")
+            {
+                nameInput.text = RefHolder.instance.dataManager.GetDisplayName();
+            }
+            
             animCon.SignInIn();
         }
         else
         {
-
+            animCon.PlayFriendsIn();
+            animCon.PlayOptionsOut();
         }
     }
 
@@ -248,21 +265,28 @@ public class UICon : MonoBehaviour
         }
         errorTxt.text = "connecting...";
         GoogleSignInDemo.instance.SignInWithGoogle();
-        takeInput = false;
+        //takeInput = false;
         StartCoroutine(lateSignInCheck());
     }
 
     IEnumerator lateSignInCheck()
     {
-        yield return new WaitForSeconds(3f);
-        if(FirebaseController.instance.user == null)
+        yield return new WaitForSeconds(2f);
+        if(FirebaseController.instance.isSignedIn == false)
         {
+            takeInput = true;
             errorTxt.text = "Connection Error... Try Again";
         }
         else
         {
-            RefHolder.instance.dataManager.SetUID(FirebaseController.instance.auth.CurrentUser.UserId);
+            
             takeInput = true;
+            if (RefHolder.instance.dataManager.GetDisplayName() != nameInput.text)
+            {
+                FirebaseController.instance.updateDesplayName(nameInput.text);
+            }
+            RefHolder.instance.dataManager.UpdateUserData();
+            //Debug.LogError("display name '"+ FirebaseController.instance.user.DisplayName + "'");
             animCon.PlayOptionsIn();
             animCon.SignInOut();
         }
@@ -297,6 +321,29 @@ public class UICon : MonoBehaviour
     #endregion
 
 
+
+    #region PlayFriendsPanel
+
+
+
+
+    public void CreateRoonButPress()
+    {
+        RefHolder.instance.dataManager.CreateRoom();
+    }
+
+
+
+
+
+
+    public void PlayFriendsBackBut()
+    {
+        animCon.PlayFriendsOut();
+        animCon.PlayOptionsIn();
+    }
+
+    #endregion
 
 
 }

@@ -29,7 +29,7 @@ public class GamePlay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //Debug.Log("random string = " + CreateRandomString());
         if (buttonTransforms[0] == null)
         {
             Debug.LogError("Set Buttons");
@@ -527,6 +527,31 @@ public class GamePlay : MonoBehaviour
         return tmp;
 
     }
+
+    #endregion
+
+
+
+
+
+    #region Online Fuctions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
 
     #endregion
 

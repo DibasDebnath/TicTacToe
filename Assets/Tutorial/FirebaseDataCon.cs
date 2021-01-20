@@ -33,7 +33,7 @@ public class FirebaseDataCon : MonoBehaviour
     {
 
 
-        var push = FirebaseController.instance.reference.Child("Users").Push();
+        var push = FirebaseController.instance.database.RootReference.Child("Users").Push();
 
         push.SetRawJsonValueAsync(json);
 

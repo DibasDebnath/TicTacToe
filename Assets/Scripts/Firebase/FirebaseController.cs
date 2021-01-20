@@ -15,6 +15,7 @@ public class FirebaseController : MonoBehaviour
     public DatabaseReference reference;
     public FirebaseUser user;
 
+    public bool isSignedIn;
 
     private void Awake()
     {
@@ -28,18 +29,48 @@ public class FirebaseController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (auth == null)
-        {
-            auth = FirebaseAuth.DefaultInstance;
-        }
+        auth = FirebaseAuth.DefaultInstance;
+        auth.StateChanged += AuthStateChanged;
+        AuthStateChanged(this, null);
+
+
         database = FirebaseDatabase.DefaultInstance;
         CheckFirebaseDependencies();
 
-        user = auth.CurrentUser;
+
+        //user = auth.CurrentUser;
+        
+        //auth.SignOut();
+
         //reference = database.RootReference;
         //database = FirebaseDatabase.DefaultInstance;
         //reference = database.RootReference;
-        Debug.Log(auth.CurrentUser.UserId);
+        //Debug.Log(auth.CurrentUser.UserId);
+    }
+    // Track state changes of the auth object.
+    void AuthStateChanged(object sender, System.EventArgs eventArgs)
+    {
+        if (auth.CurrentUser != user)
+        {
+            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+            if (!signedIn && user != null)
+            {
+                Debug.Log("Signed out from auth change " + user.UserId);
+                isSignedIn = false;
+            }
+            user = auth.CurrentUser;
+            if (signedIn)
+            {
+                Debug.Log("Signed in from auth change " + user.UserId);
+                isSignedIn = true;
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        auth.StateChanged -= AuthStateChanged;
+        auth = null;
     }
 
     // Update is called once per frame
@@ -134,6 +165,8 @@ public class FirebaseController : MonoBehaviour
                 user.DisplayName, user.UserId);
 
             //auth.CurrentUser.
+            
+            
         });
         
         
@@ -161,7 +194,7 @@ public class FirebaseController : MonoBehaviour
                     return;
                 }
 
-                Debug.Log("User profile updated successfully.");
+                Debug.Log("User Display Name updated successfully. - ' "+ user.DisplayName+"'");
             });
         }
     }
