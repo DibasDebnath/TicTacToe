@@ -3,24 +3,61 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+
 public class PlayerDataManager : MonoBehaviour
 {
 
     public readonly string User = "User";
     public readonly string Rooms = "Rooms";
-    public readonly string RoomID = "RoomID";
+    public readonly string RoomID = "roomID";
     public readonly string Match = "match";
     public readonly string Win = "win";
 
+    public int matchValue;
+    public int winValue;
+    public string roomIDValue;
 
 
 
     private void Start()
     {
-        
+        GetAllPlayerPrefsValue();
+        //PlayerPrefs.DeleteAll();
+        //Debug.LogError(GetRoomID());
+    }
+    public void GetAllPlayerPrefsValue()
+    {
+        matchValue = GetMatchValue();
+        winValue = GetWinValue();
+        roomIDValue = GetRoomID();
+    }
+    public void SaveMatchValue(int value)
+    {
+        PlayerPrefs.SetInt(Match, value);
+    }
+    public int LoadMatchValue()
+    {
+        return PlayerPrefs.GetInt(Match, 0);
+    }
+    public void SaveWinValue(int value)
+    {
+        PlayerPrefs.SetInt(Win, value);
+    }
+    public int LoadWinValue()
+    {
+        return PlayerPrefs.GetInt(Win, 0);
+    }
+    public void SaveRoomIDValue(string value)
+    {
+        PlayerPrefs.SetString(RoomID, value);
+    }
+    public string LoadRoomIDValue()
+    {
+        return PlayerPrefs.GetString(RoomID, "");
     }
 
-    
+
     public string GetUID()
     {
         return FirebaseController.instance.user.UserId;
@@ -39,19 +76,30 @@ public class PlayerDataManager : MonoBehaviour
 
     public void SetMatchValue(int value)
     {
-        PlayerPrefs.SetInt(Match, value);
+        matchValue = value;
+        SaveMatchValue(value);
     }
     public int GetMatchValue()
     {
-        return PlayerPrefs.GetInt(Match , 0);
+        return matchValue;
     }
     public void SetWinValue(int value)
     {
-        PlayerPrefs.SetInt(Win, value);
+        winValue = value;
+        SaveWinValue(value);
     }
     public int GetWinValue()
     {
-        return PlayerPrefs.GetInt(Win, 0);
+        return winValue;
+    }
+    public void SetRoomID(string value)
+    {
+        roomIDValue = value;
+        SaveRoomIDValue(value);
+    }
+    public string GetRoomID()
+    {
+        return roomIDValue;
     }
     public void MatchEndUpdateData(bool win)
     {
@@ -62,14 +110,7 @@ public class PlayerDataManager : MonoBehaviour
         }
         UpdateUserData();
     }
-    public void SetRoomID(string value)
-    {
-        PlayerPrefs.SetString(RoomID, value);
-    }
-    public string GetRoomID()
-    {
-        return PlayerPrefs.GetString(RoomID, "");
-    }
+    
 
     #region Firebase
 
@@ -112,7 +153,10 @@ public class PlayerDataManager : MonoBehaviour
                     }
                     else
                     {
+                        //CreateRoom();
                         Debug.Log("Same Room Exist");
+                        DeletePreviousRoomIfExists();
+                        
                         return;
                         
                     }
@@ -126,7 +170,15 @@ public class PlayerDataManager : MonoBehaviour
     }
 
 
-
+    public void DeletePreviousRoomIfExists()
+    {
+        Debug.Log("Same Room Exist 1 "+ GetRoomID());
+        if (GetRoomID() != "")
+        {
+            Debug.Log("Same Room Exist 2");
+            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).RemoveValueAsync();
+        }
+    }
 
 
     #endregion

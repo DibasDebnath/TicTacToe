@@ -69,7 +69,7 @@ public class UICon : MonoBehaviour
         signInAnonBut.onClick.AddListener(() => SignInAnonButPress());
         signbackBut.onClick.AddListener(() => SignInBackButPress());
         joinRoomBut.onClick.AddListener(() => SignInGoogleButPress());
-        createRoomBut.onClick.AddListener(() => CreateRoonButPress());
+        createRoomBut.onClick.AddListener(() => CreateRoomButPress());
         playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
 
 
@@ -327,7 +327,7 @@ public class UICon : MonoBehaviour
 
 
 
-    public void CreateRoonButPress()
+    public void CreateRoomButPress()
     {
         RefHolder.instance.dataManager.CreateRoom();
     }
