@@ -329,10 +329,24 @@ public class UICon : MonoBehaviour
 
     public void CreateRoomButPress()
     {
+        playFriendsErrorTxt.text = "Connecting...";
         RefHolder.instance.dataManager.CreateRoom();
+        StartCoroutine(lateCreateRoomCheck());
     }
 
-
+    IEnumerator lateCreateRoomCheck()
+    {
+        yield return new WaitForSeconds(1f);
+        if (RefHolder.instance.dataManager.roomCreated)
+        {
+            playFriendsErrorTxt.text = "Room ID = " + RefHolder.instance.dataManager.GetRoomID() +System.Environment.NewLine + "Waiting for player to joind ";
+            RefHolder.instance.dataManager.StartRoomValueChangeListener();
+        }
+        else
+        {
+            playFriendsErrorTxt.text = "Connection Error Try Again";
+        }
+    }
 
 
 

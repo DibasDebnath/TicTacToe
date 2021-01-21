@@ -14,11 +14,26 @@ public class PlayerDataManager : MonoBehaviour
     public readonly string Match = "match";
     public readonly string Win = "win";
 
+
+
+    public readonly string roomID = "roomID";
+    public readonly string status = "status";
+    public readonly string board = "board";
+    public readonly string uidOne = "uidOne";
+    public readonly string uidTwo = "uidTwo";
+    public readonly string turnUid = "turnUid";
+    public readonly string isPrivate = "isPrivate";
+    public readonly string oneReady = "oneReady";
+    public readonly string twoReady = "twoReady";
+
+
+
     public int matchValue;
     public int winValue;
     public string roomIDValue;
 
-
+    public bool roomCreated;
+    public bool playerEntered;
 
     private void Start()
     {
@@ -110,10 +125,12 @@ public class PlayerDataManager : MonoBehaviour
         }
         UpdateUserData();
     }
-    
+
 
     #region Firebase
 
+
+    
 
     public void UpdateUserData()
     {
@@ -129,8 +146,8 @@ public class PlayerDataManager : MonoBehaviour
 
     public void CreateRoom()
     {
-        //string roomID = CreateRandomString();
-        string roomID = "0sgf3a";
+        string roomID = CreateRandomString();
+        //string roomID = "0sgf3a";
 
         SetRoomID(roomID);
 
@@ -153,9 +170,9 @@ public class PlayerDataManager : MonoBehaviour
                     }
                     else
                     {
-                        //CreateRoom();
+                        CreateRoom();
                         Debug.Log("Same Room Exist");
-                        DeletePreviousRoomIfExists();
+                        //DeletePreviousRoomIfExists();
                         
                         return;
                         
@@ -164,6 +181,7 @@ public class PlayerDataManager : MonoBehaviour
 
             }
             FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
+            roomCreated = true;
             Debug.Log("Room Created");
         });
         //FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
@@ -180,6 +198,61 @@ public class PlayerDataManager : MonoBehaviour
         }
     }
 
+
+    private Firebase.Database.Query tmpRoomRef;
+
+    private Firebase.Database.DataSnapshot oldDataSnapshot;
+    private Firebase.Database.DataSnapshot newDataSnapshot;
+    public void StartRoomValueChangeListener()
+    {
+        oldDataSnapshot = null;
+        tmpRoomRef = FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID());
+        tmpRoomRef.ValueChanged += HandleRoomValueChange;
+    }
+
+
+    public void StopRoomValueChangeListener()
+    {
+        if (tmpRoomRef != null)
+        {
+            tmpRoomRef.ValueChanged -= HandleRoomValueChange;
+        }
+    }
+
+
+    private void HandleRoomValueChange(object sender, Firebase.Database.ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        Debug.Log("Received values.");
+       
+        if (args.Snapshot != null && args.Snapshot.ChildrenCount > 0)
+        {
+            if (oldDataSnapshot == null)
+            {
+                //Save old Data at first 
+                oldDataSnapshot = args.Snapshot;
+                return;
+            }
+
+            if(oldDataSnapshot.Child(uidTwo).Value.ToString() != args.Snapshot.Child(uidTwo).Value.ToString())
+            {
+                playerEntered = true;
+            }
+
+
+
+            //replace old at the end
+            oldDataSnapshot = args.Snapshot;
+        }
+        else
+        {
+            Debug.LogError("Recieved null data");
+        }
+    }
 
     #endregion
 
