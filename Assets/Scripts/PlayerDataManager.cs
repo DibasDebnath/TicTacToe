@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 
 
 public class PlayerDataManager : MonoBehaviour
@@ -33,6 +33,7 @@ public class PlayerDataManager : MonoBehaviour
     public string roomIDValue;
 
     public bool roomCreated;
+    public bool roomJoined;
     public bool playerEntered;
 
     private void Start()
@@ -187,13 +188,51 @@ public class PlayerDataManager : MonoBehaviour
         //FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
     }
 
+    public void JoinRoom(string roomID)
+    {
+        
+        
+
+        FirebaseController.instance.database.RootReference.Child(Rooms).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
+        {
+            roomJoined = false;
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Problem Connecting");
+            }
+            else if (task.IsCompleted)
+            {
+                foreach (var childSnapshot in task.Result.Children)
+                {
+                    if (childSnapshot.Child(roomID) == null)
+                    {
+                        Debug.Log("Found Null");
+                        
+                    }
+                    else
+                    {
+                        SetRoomID(roomID);
+                        roomJoined = true;
+                        Debug.Log("Room Exists");
+                        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(uidTwo).SetValueAsync(GetUID());
+                        //DeletePreviousRoomIfExists();
+                        return;
+
+                    }
+                }
+
+            }
+            
+        });
+    }
+
 
     public void DeletePreviousRoomIfExists()
     {
-        Debug.Log("Same Room Exist 1 "+ GetRoomID());
+        //Debug.Log("Same Room Exist 1 "+ GetRoomID());
         if (GetRoomID() != "")
         {
-            Debug.Log("Same Room Exist 2");
+            //Debug.Log("Same Room Exist 2");
             FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).RemoveValueAsync();
         }
     }
@@ -228,7 +267,7 @@ public class PlayerDataManager : MonoBehaviour
             return;
         }
         Debug.Log("Received values.");
-       
+
         if (args.Snapshot != null && args.Snapshot.ChildrenCount > 0)
         {
             if (oldDataSnapshot == null)
@@ -237,11 +276,23 @@ public class PlayerDataManager : MonoBehaviour
                 oldDataSnapshot = args.Snapshot;
                 return;
             }
-
-            if(oldDataSnapshot.Child(uidTwo).Value.ToString() != args.Snapshot.Child(uidTwo).Value.ToString())
+            // Check if User opposite User Entered
+            if (oldDataSnapshot.Child(uidTwo).Value.ToString() == "" && args.Snapshot.Child(uidTwo).Value.ToString() != "")
             {
-                playerEntered = true;
+                RefHolder.instance.uICon.readyBut.interactable = true;
+                RefHolder.instance.uICon.matchMakingFriendsErrorTxt.text = "Player Joined Press Ready";
             }
+
+            // Check if Other User Ready
+            //Debug.Log(args.Snapshot.Child(oneReady).Value.ToString());
+            if ((oldDataSnapshot.Child(oneReady).Value.ToString() == "False" && args.Snapshot.Child(oneReady).Value.ToString() == "True" && args.Snapshot.Child(twoReady).Value.ToString() == "True")
+                || (oldDataSnapshot.Child(twoReady).Value.ToString() == "False" && args.Snapshot.Child(twoReady).Value.ToString() == "True" && args.Snapshot.Child(oneReady).Value.ToString() == "True"))
+            {
+                // Start Game
+                Debug.Log("start Game");
+            }
+            
+            
 
 
 
@@ -251,6 +302,25 @@ public class PlayerDataManager : MonoBehaviour
         else
         {
             Debug.LogError("Recieved null data");
+            SetRoomID("");
+            SceneManager.LoadScene("Game");
+        }
+    }
+
+
+
+
+
+
+    public void setUserReady()
+    {
+        if (roomCreated)
+        {
+            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(oneReady).SetValueAsync(true);
+        }
+        else
+        {
+            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(twoReady).SetValueAsync(true);
         }
     }
 
@@ -332,7 +402,7 @@ public class Room
         this.turnUid = turnUid;
         this.isPrivate = isPrivate;
         this.oneReady = oneReady;
-        this.oneReady = oneReady;
+        this.twoReady = twoReady;
     }
 
 }

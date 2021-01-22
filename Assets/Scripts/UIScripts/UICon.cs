@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class UICon : MonoBehaviour
@@ -52,6 +53,12 @@ public class UICon : MonoBehaviour
     public TextMeshProUGUI playFriendsErrorTxt;
     public InputField roomCodeInput;
 
+    [Header("Match Making Friends Panel")]
+    public Button readyBut;
+    public Button matchMakingFriendsbackBut;
+    public TextMeshProUGUI matchMakingFriendsErrorTxt;
+    public TextMeshProUGUI matchMakingFriendsRoomCodeTxt;
+
     private void Start()
     {
         exitBut.onClick.AddListener(() => ExitButPress());
@@ -71,6 +78,8 @@ public class UICon : MonoBehaviour
         joinRoomBut.onClick.AddListener(() => SignInGoogleButPress());
         createRoomBut.onClick.AddListener(() => CreateRoomButPress());
         playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
+        readyBut.onClick.AddListener(() => MatchMakingFriendsReadyButPress());
+        matchMakingFriendsbackBut.onClick.AddListener(() => MatchMakingFriendsBackButPress());
 
 
 
@@ -329,24 +338,71 @@ public class UICon : MonoBehaviour
 
     public void CreateRoomButPress()
     {
+        if (!takeInput)
+        {
+            return;
+        }
+        takeInput = false;
         playFriendsErrorTxt.text = "Connecting...";
         RefHolder.instance.dataManager.CreateRoom();
-        StartCoroutine(lateCreateRoomCheck());
+        StartCoroutine(LateCreateRoomCheck());
     }
 
-    IEnumerator lateCreateRoomCheck()
+    IEnumerator LateCreateRoomCheck()
     {
         yield return new WaitForSeconds(1f);
         if (RefHolder.instance.dataManager.roomCreated)
         {
-            playFriendsErrorTxt.text = "Room ID = " + RefHolder.instance.dataManager.GetRoomID() +System.Environment.NewLine + "Waiting for player to joind ";
+            matchMakingFriendsRoomCodeTxt.text = "Created Room ID = '" + RefHolder.instance.dataManager.GetRoomID() + "'";
+            matchMakingFriendsErrorTxt.text = "Waiting For player to Join";
             RefHolder.instance.dataManager.StartRoomValueChangeListener();
+            animCon.MatchMakingFriendsPanelIn();
+            animCon.PlayFriendsOut();
+            takeInput = true;
         }
         else
         {
             playFriendsErrorTxt.text = "Connection Error Try Again";
+            takeInput = true;
+        }
+        
+    }
+
+    public void JoinRoomButPress()
+    {
+        if (!takeInput)
+        {
+            return;
+        }
+        takeInput = false;
+        playFriendsErrorTxt.text = "Connecting...";
+        RefHolder.instance.dataManager.JoinRoom(roomCodeInput.text.ToLower());
+        StartCoroutine(LateJoinRoomCheck());
+    }
+
+
+
+    IEnumerator LateJoinRoomCheck()
+    {
+        yield return new WaitForSeconds(1f);
+        if (RefHolder.instance.dataManager.roomJoined)
+        {
+            matchMakingFriendsRoomCodeTxt.text = "Joined Room ID = '" + RefHolder.instance.dataManager.GetRoomID() + "'";
+            matchMakingFriendsErrorTxt.text = "Press Ready";
+            readyBut.interactable = true;
+            RefHolder.instance.dataManager.StartRoomValueChangeListener();
+            animCon.MatchMakingFriendsPanelIn();
+            animCon.PlayFriendsOut();
+            takeInput = true;
+        }
+        else
+        {
+            playFriendsErrorTxt.text = "Error Try Again";
+            takeInput = true;
         }
     }
+
+
 
 
 
@@ -359,5 +415,24 @@ public class UICon : MonoBehaviour
 
     #endregion
 
+
+
+    #region MatchMaking Friends Panel
+
+    public void MatchMakingFriendsReadyButPress()
+    {
+        matchMakingFriendsErrorTxt.text = "waiting All Players to be ready";
+        RefHolder.instance.dataManager.setUserReady();
+    }
+
+
+
+    public void MatchMakingFriendsBackButPress()
+    {
+        RefHolder.instance.dataManager.DeletePreviousRoomIfExists();
+        SceneManager.LoadScene("Game");
+    }
+
+    #endregion
 
 }
