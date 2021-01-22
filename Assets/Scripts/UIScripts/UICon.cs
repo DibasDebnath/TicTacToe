@@ -421,9 +421,22 @@ public class UICon : MonoBehaviour
 
     public void MatchMakingFriendsReadyButPress()
     {
-        matchMakingFriendsErrorTxt.text = "waiting All Players to be ready";
+        matchMakingFriendsErrorTxt.text = "Waiting Players to be ready";
         RefHolder.instance.dataManager.setUserReady();
     }
+
+
+
+    public void StartGameOnlineFriends()
+    {
+        RefHolder.instance.gamePlay.onlineMode = true;
+        takeInput = false;
+        animCon.MatchMakingFriendsPanelOut();
+        animCon.GamePanelIn();
+    }
+
+
+
 
 
 

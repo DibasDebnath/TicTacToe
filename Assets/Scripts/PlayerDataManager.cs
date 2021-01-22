@@ -31,6 +31,9 @@ public class PlayerDataManager : MonoBehaviour
     public int matchValue;
     public int winValue;
     public string roomIDValue;
+    public string tmpUIDOne;
+    public string tmpUIDTwo;
+    
 
     public bool roomCreated;
     public bool roomJoined;
@@ -183,6 +186,7 @@ public class PlayerDataManager : MonoBehaviour
             }
             FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
             roomCreated = true;
+            RefHolder.instance.gamePlay.onlinePlayer = 1;
             Debug.Log("Room Created");
         });
         //FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
@@ -214,6 +218,7 @@ public class PlayerDataManager : MonoBehaviour
                         SetRoomID(roomID);
                         roomJoined = true;
                         Debug.Log("Room Exists");
+                        RefHolder.instance.gamePlay.onlinePlayer = 2;
                         FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(uidTwo).SetValueAsync(GetUID());
                         //DeletePreviousRoomIfExists();
                         return;
@@ -240,7 +245,7 @@ public class PlayerDataManager : MonoBehaviour
 
     private Firebase.Database.Query tmpRoomRef;
 
-    private Firebase.Database.DataSnapshot oldDataSnapshot;
+    public Firebase.Database.DataSnapshot oldDataSnapshot;
     private Firebase.Database.DataSnapshot newDataSnapshot;
     public void StartRoomValueChangeListener()
     {
@@ -281,6 +286,15 @@ public class PlayerDataManager : MonoBehaviour
             {
                 RefHolder.instance.uICon.readyBut.interactable = true;
                 RefHolder.instance.uICon.matchMakingFriendsErrorTxt.text = "Player Joined Press Ready";
+                //Setting Turn ID with Room Creator
+                if (Random.Range(0, 2) == 0)
+                {
+                    FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(args.Snapshot.Child(uidOne).Value.ToString());
+                }
+                else
+                {
+                    FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(args.Snapshot.Child(uidTwo).Value.ToString());
+                }
             }
 
             // Check if Other User Ready
@@ -289,10 +303,18 @@ public class PlayerDataManager : MonoBehaviour
                 || (oldDataSnapshot.Child(twoReady).Value.ToString() == "False" && args.Snapshot.Child(twoReady).Value.ToString() == "True" && args.Snapshot.Child(oneReady).Value.ToString() == "True"))
             {
                 // Start Game
+                tmpUIDOne = args.Snapshot.Child(uidOne).Value.ToString();
+                tmpUIDTwo = args.Snapshot.Child(uidTwo).Value.ToString();
+                
+                
                 Debug.Log("start Game");
+                RefHolder.instance.uICon.StartGameOnlineFriends();
             }
-            
-            
+
+            if(oldDataSnapshot.Child(board).Value.ToString() != args.Snapshot.Child(board).Value.ToString())
+            {
+
+            }
 
 
 
@@ -321,6 +343,42 @@ public class PlayerDataManager : MonoBehaviour
         else
         {
             FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(twoReady).SetValueAsync(true);
+        }
+    }
+
+
+    public void ResetBoard()
+    {
+        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(board).SetValueAsync("000000000");
+    }
+
+
+    public void UpdateBoard()
+    {
+        List<int> list = new List<int>();
+
+        for (int j = 0; j < 3; j++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                list.Add(RefHolder.instance.gamePlay.board[j, k]);
+            }
+        }
+
+        string tmpBoard = list.ToString();
+
+        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(board).SetValueAsync(tmpBoard);
+    }
+
+    public void setTurnID(int currentPlayer)
+    {
+        if(currentPlayer == 1)
+        {
+            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(tmpUIDOne);
+        }
+        else
+        {
+            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(tmpUIDTwo);
         }
     }
 

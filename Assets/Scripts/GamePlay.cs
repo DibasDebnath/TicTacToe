@@ -11,6 +11,7 @@ public class GamePlay : MonoBehaviour
     private List<Transform> buttonTransforms;
 
     public bool AIMode;
+    public bool onlineMode;
 
     private List<Transform> winningButtonTransforms = new List<Transform>();
     
@@ -22,9 +23,10 @@ public class GamePlay : MonoBehaviour
     private GameObject[,] OArray = new GameObject[3,3];
     private GameObject[,] XArray = new GameObject[3,3];
 
-    private int[,] board = new int[3,3]; // 0 - Empty , 1 - O , 2 - X
+    public int[,] board = new int[3,3]; // 0 - Empty , 1 - O , 2 - X
 
     public int currentPlayer;
+    public int onlinePlayer;
 
     // Start is called before the first frame update
     void Start()
@@ -43,15 +45,22 @@ public class GamePlay : MonoBehaviour
 
     public void StartGame()
     {
-        
+       
         ResetAll();
-        if (AIMode && currentPlayer == 2)
+        if (AIMode && currentPlayer == 2 && onlineMode == false)
         {
             AIInput();
         }
-        else
+        else if (AIMode && currentPlayer == 1 && onlineMode == false)
         {
             RefHolder.instance.uICon.takeInput = true;
+        }
+        else if (AIMode == false  && onlineMode == true)
+        {
+            if(onlinePlayer == currentPlayer)
+            {
+                RefHolder.instance.uICon.takeInput = true;
+            }
         }
         StartCountDown();
     }
@@ -78,18 +87,45 @@ public class GamePlay : MonoBehaviour
                 
             }
         }
-        currentPlayer = Random.Range(1, 3);
-        if (AIMode == true && currentPlayer == 2)
+        if (onlineMode)
         {
-            RefHolder.instance.uICon.playerText.text = "AI Turn";
-        }
-        else if (AIMode == true && currentPlayer == 1)
-        {
-            RefHolder.instance.uICon.playerText.text = "Your Turn";
+            if(RefHolder.instance.dataManager.tmpUIDOne == RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.turnUid).Value.ToString())
+            {
+                currentPlayer = 1;
+            }
+            else
+            {
+                currentPlayer = 2;
+            }
         }
         else
         {
+            currentPlayer = Random.Range(1, 3);
+        }
+        
+        if (AIMode == true && currentPlayer == 2 && onlineMode == false)
+        {
+            RefHolder.instance.uICon.playerText.text = "AI Turn";
+        }
+        else if (AIMode == true && currentPlayer == 1 && onlineMode == false)
+        {
+            RefHolder.instance.uICon.playerText.text = "Your Turn";
+        }
+        else if(AIMode == true && onlineMode == false)
+        {
             RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+        }
+        else if (AIMode == false && onlineMode == true && currentPlayer == 1)
+        {
+            RefHolder.instance.uICon.playerText.text = "Creator Turn";
+        }
+        else if (AIMode == false && onlineMode == true && currentPlayer == 2)
+        {
+            RefHolder.instance.uICon.playerText.text = "Joiner Turn";
+        }
+        if (onlineMode)
+        {
+            //RefHolder.instance.dataManager.ResetBoard();
         }
         isMatchEnd = false;
         coutdownTimer = 0;
@@ -151,11 +187,15 @@ public class GamePlay : MonoBehaviour
         //RefHolder.instance.playerInput.buttonClick(j, k);
         if (RefHolder.instance.uICon.takeInput)
         {
-
+            
             if (board[j, k] == 0)
             {
                 RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
                 board[j, k] = currentPlayer;
+                if (onlineMode)
+                {
+                    RefHolder.instance.dataManager.UpdateBoard();
+                }
                 buttonArray[j, k].interactable = false;
                 switch (currentPlayer)
                 {
@@ -335,6 +375,19 @@ public class GamePlay : MonoBehaviour
                 // call ai here;
                 AIInput();
             }
+
+            if (onlineMode)
+            {
+                RefHolder.instance.dataManager.setTurnID(currentPlayer);
+                if (RefHolder.instance.dataManager.GetUID() == RefHolder.instance.dataManager.tmpUIDTwo)
+                {
+                    RefHolder.instance.uICon.takeInput = true;
+                }
+                else
+                {
+                    RefHolder.instance.uICon.takeInput = false;
+                }
+            }
             
 
         }
@@ -352,6 +405,19 @@ public class GamePlay : MonoBehaviour
             Debug.Log("CurrentPlayer " + currentPlayer);
             
             StartCountDown();
+
+            if (onlineMode)
+            {
+                RefHolder.instance.dataManager.setTurnID(currentPlayer);
+                if (RefHolder.instance.dataManager.GetUID() == RefHolder.instance.dataManager.tmpUIDOne)
+                {
+                    RefHolder.instance.uICon.takeInput = true;
+                }
+                else
+                {
+                    RefHolder.instance.uICon.takeInput = false;
+                }
+            }
         }
     }
 
