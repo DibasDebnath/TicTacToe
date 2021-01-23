@@ -89,14 +89,7 @@ public class GamePlay : MonoBehaviour
         }
         if (onlineMode)
         {
-            if(RefHolder.instance.dataManager.tmpUIDOne == RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.turnUid).Value.ToString())
-            {
-                currentPlayer = 1;
-            }
-            else
-            {
-                currentPlayer = 2;
-            }
+            
         }
         else
         {
@@ -191,11 +184,7 @@ public class GamePlay : MonoBehaviour
             if (board[j, k] == 0)
             {
                 RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
-                board[j, k] = currentPlayer;
-                if (onlineMode)
-                {
-                    RefHolder.instance.dataManager.UpdateBoard();
-                }
+                board[j, k] = currentPlayer;               
                 buttonArray[j, k].interactable = false;
                 switch (currentPlayer)
                 {
@@ -379,14 +368,7 @@ public class GamePlay : MonoBehaviour
             if (onlineMode)
             {
                 RefHolder.instance.dataManager.setTurnID(currentPlayer);
-                if (RefHolder.instance.dataManager.GetUID() == RefHolder.instance.dataManager.tmpUIDTwo)
-                {
-                    RefHolder.instance.uICon.takeInput = true;
-                }
-                else
-                {
-                    RefHolder.instance.uICon.takeInput = false;
-                }
+                
             }
             
 
@@ -409,14 +391,7 @@ public class GamePlay : MonoBehaviour
             if (onlineMode)
             {
                 RefHolder.instance.dataManager.setTurnID(currentPlayer);
-                if (RefHolder.instance.dataManager.GetUID() == RefHolder.instance.dataManager.tmpUIDOne)
-                {
-                    RefHolder.instance.uICon.takeInput = true;
-                }
-                else
-                {
-                    RefHolder.instance.uICon.takeInput = false;
-                }
+                
             }
         }
     }
@@ -473,7 +448,7 @@ public class GamePlay : MonoBehaviour
         }
         if (AIMode && currentPlayer == 2)
         {
-            RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+            RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");    
         }
         else
         {

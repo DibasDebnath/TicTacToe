@@ -75,7 +75,7 @@ public class UICon : MonoBehaviour
         signInGoogleBut.onClick.AddListener(() => SignInGoogleButPress());
         signInAnonBut.onClick.AddListener(() => SignInAnonButPress());
         signbackBut.onClick.AddListener(() => SignInBackButPress());
-        joinRoomBut.onClick.AddListener(() => SignInGoogleButPress());
+        joinRoomBut.onClick.AddListener(() => JoinRoomButPress());
         createRoomBut.onClick.AddListener(() => CreateRoomButPress());
         playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
         readyBut.onClick.AddListener(() => MatchMakingFriendsReadyButPress());

@@ -8,36 +8,33 @@ using UnityEngine.SceneManagement;
 public class PlayerDataManager : MonoBehaviour
 {
 
-    public readonly string User = "User";
-    public readonly string Rooms = "Rooms";
-    public readonly string RoomID = "roomID";
-    public readonly string Match = "match";
-    public readonly string Win = "win";
+    public readonly string USER = "User";
+    public readonly string NAME = "Name";
+    public readonly string ROOMS = "Rooms";
+    public readonly string ROOMID = "roomID";
+    public readonly string MATCH = "match";
+    public readonly string WIN = "win";
 
 
 
-    public readonly string roomID = "roomID";
-    public readonly string status = "status";
-    public readonly string board = "board";
-    public readonly string uidOne = "uidOne";
-    public readonly string uidTwo = "uidTwo";
-    public readonly string turnUid = "turnUid";
-    public readonly string isPrivate = "isPrivate";
-    public readonly string oneReady = "oneReady";
-    public readonly string twoReady = "twoReady";
+
+    public readonly string READY = "ready";
+    public readonly string ISPRIVATE = "isPrivate";
+    public readonly string CURRENTPLAYER = "CurrentPlayer";
+    public readonly string USERONE = "userOne";
+    public readonly string USERTWO = "userTwo";
+    public readonly string UID = "uid";
 
 
 
     public int matchValue;
     public int winValue;
     public string roomIDValue;
-    public string tmpUIDOne;
-    public string tmpUIDTwo;
+
     
 
     public bool roomCreated;
     public bool roomJoined;
-    public bool playerEntered;
 
     private void Start()
     {
@@ -53,28 +50,29 @@ public class PlayerDataManager : MonoBehaviour
     }
     public void SaveMatchValue(int value)
     {
-        PlayerPrefs.SetInt(Match, value);
+        PlayerPrefs.SetInt(MATCH, value);
     }
     public int LoadMatchValue()
     {
-        return PlayerPrefs.GetInt(Match, 0);
+        return PlayerPrefs.GetInt(MATCH, 0);
     }
     public void SaveWinValue(int value)
     {
-        PlayerPrefs.SetInt(Win, value);
+        PlayerPrefs.SetInt(WIN, value);
     }
     public int LoadWinValue()
     {
-        return PlayerPrefs.GetInt(Win, 0);
+        return PlayerPrefs.GetInt(WIN, 0);
     }
     public void SaveRoomIDValue(string value)
     {
-        PlayerPrefs.SetString(RoomID, value);
+        PlayerPrefs.SetString(ROOMID, value);
     }
     public string LoadRoomIDValue()
     {
-        return PlayerPrefs.GetString(RoomID, "");
+        return PlayerPrefs.GetString(ROOMID, "");
     }
+    
 
 
     public string GetUID()
@@ -140,7 +138,7 @@ public class PlayerDataManager : MonoBehaviour
     {
         Userdata u = new Userdata(GetMatchValue(), GetWinValue());
 
-        FirebaseController.instance.database.RootReference.Child(User).Child(GetUID()).SetRawJsonValueAsync(JsonUtility.ToJson(u));
+        FirebaseController.instance.database.RootReference.Child(USER).Child(GetUID()).SetRawJsonValueAsync(JsonUtility.ToJson(u));
 
     }
 
@@ -155,9 +153,9 @@ public class PlayerDataManager : MonoBehaviour
 
         SetRoomID(roomID);
 
-        Room R = new Room(roomID, 0,"000000000",GetUID(),"","",true,false,false);
+        Room R = new Room(roomID, GetUID(), GetDisplayName(), Random.Range(0,2), true);
 
-        FirebaseController.instance.database.RootReference.Child(Rooms).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
+        FirebaseController.instance.database.RootReference.Child(ROOMS).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
             {
@@ -184,7 +182,7 @@ public class PlayerDataManager : MonoBehaviour
                 }
 
             }
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
+            FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
             roomCreated = true;
             RefHolder.instance.gamePlay.onlinePlayer = 1;
             Debug.Log("Room Created");
@@ -194,10 +192,11 @@ public class PlayerDataManager : MonoBehaviour
 
     public void JoinRoom(string roomID)
     {
-        
-        
 
-        FirebaseController.instance.database.RootReference.Child(Rooms).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
+        Debug.LogError(roomID);
+        SetRoomID(roomID);
+
+        FirebaseController.instance.database.RootReference.Child(ROOMS).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
         {
             roomJoined = false;
             if (task.IsFaulted)
@@ -215,11 +214,12 @@ public class PlayerDataManager : MonoBehaviour
                     }
                     else
                     {
-                        SetRoomID(roomID);
+                        //SetRoomID(roomID);
                         roomJoined = true;
                         Debug.Log("Room Exists");
                         RefHolder.instance.gamePlay.onlinePlayer = 2;
-                        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(uidTwo).SetValueAsync(GetUID());
+                        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).Child(USERTWO).Child(UID).SetValueAsync(GetUID());
+                        //FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(USERTWO).Child(NAME).SetValueAsync(GetDisplayName());
                         //DeletePreviousRoomIfExists();
                         return;
 
@@ -238,7 +238,7 @@ public class PlayerDataManager : MonoBehaviour
         if (GetRoomID() != "")
         {
             //Debug.Log("Same Room Exist 2");
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).RemoveValueAsync();
+            FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).RemoveValueAsync();
         }
     }
 
@@ -250,7 +250,7 @@ public class PlayerDataManager : MonoBehaviour
     public void StartRoomValueChangeListener()
     {
         oldDataSnapshot = null;
-        tmpRoomRef = FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID());
+        tmpRoomRef = FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID());
         tmpRoomRef.ValueChanged += HandleRoomValueChange;
     }
 
@@ -282,39 +282,26 @@ public class PlayerDataManager : MonoBehaviour
                 return;
             }
             // Check if User opposite User Entered
-            if (oldDataSnapshot.Child(uidTwo).Value.ToString() == "" && args.Snapshot.Child(uidTwo).Value.ToString() != "")
+            if (oldDataSnapshot.Child(USERTWO).Child(UID).Value.ToString() == "" && args.Snapshot.Child(USERTWO).Child(UID).Value.ToString() != "")
             {
                 RefHolder.instance.uICon.readyBut.interactable = true;
                 RefHolder.instance.uICon.matchMakingFriendsErrorTxt.text = "Player Joined Press Ready";
-                //Setting Turn ID with Room Creator
-                if (Random.Range(0, 2) == 0)
-                {
-                    FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(args.Snapshot.Child(uidOne).Value.ToString());
-                }
-                else
-                {
-                    FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(args.Snapshot.Child(uidTwo).Value.ToString());
-                }
+ 
             }
 
             // Check if Other User Ready
             //Debug.Log(args.Snapshot.Child(oneReady).Value.ToString());
-            if ((oldDataSnapshot.Child(oneReady).Value.ToString() == "False" && args.Snapshot.Child(oneReady).Value.ToString() == "True" && args.Snapshot.Child(twoReady).Value.ToString() == "True")
-                || (oldDataSnapshot.Child(twoReady).Value.ToString() == "False" && args.Snapshot.Child(twoReady).Value.ToString() == "True" && args.Snapshot.Child(oneReady).Value.ToString() == "True"))
+            if ((oldDataSnapshot.Child(USERONE).Child(READY).Value.ToString() == "False" && args.Snapshot.Child(USERONE).Child(READY).Value.ToString() == "True" && args.Snapshot.Child(USERTWO).Child(READY).Value.ToString() == "True")
+                || (oldDataSnapshot.Child(USERTWO).Child(READY).Value.ToString() == "False" && args.Snapshot.Child(USERTWO).Child(READY).Value.ToString() == "True" && args.Snapshot.Child(USERONE).Child(READY).Value.ToString() == "True"))
             {
                 // Start Game
-                tmpUIDOne = args.Snapshot.Child(uidOne).Value.ToString();
-                tmpUIDTwo = args.Snapshot.Child(uidTwo).Value.ToString();
                 
                 
                 Debug.Log("start Game");
                 RefHolder.instance.uICon.StartGameOnlineFriends();
             }
 
-            if(oldDataSnapshot.Child(board).Value.ToString() != args.Snapshot.Child(board).Value.ToString())
-            {
-
-            }
+            
 
 
 
@@ -338,48 +325,26 @@ public class PlayerDataManager : MonoBehaviour
     {
         if (roomCreated)
         {
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(oneReady).SetValueAsync(true);
+            FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(USERONE).Child(READY).SetValueAsync(true);
         }
         else
         {
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(twoReady).SetValueAsync(true);
+            FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(USERTWO).Child(READY).SetValueAsync(true);
         }
+        RefHolder.instance.uICon.readyBut.interactable = false;
     }
 
 
-    public void ResetBoard()
-    {
-        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(board).SetValueAsync("000000000");
-    }
+    
 
 
-    public void UpdateBoard()
-    {
-        List<int> list = new List<int>();
-
-        for (int j = 0; j < 3; j++)
-        {
-            for (int k = 0; k < 3; k++)
-            {
-                list.Add(RefHolder.instance.gamePlay.board[j, k]);
-            }
-        }
-
-        string tmpBoard = list.ToString();
-
-        FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(board).SetValueAsync(tmpBoard);
-    }
+    
 
     public void setTurnID(int currentPlayer)
     {
-        if(currentPlayer == 1)
-        {
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(tmpUIDOne);
-        }
-        else
-        {
-            FirebaseController.instance.database.RootReference.Child(Rooms).Child(GetRoomID()).Child(turnUid).SetValueAsync(tmpUIDTwo);
-        }
+
+        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(CURRENTPLAYER).SetValueAsync(currentPlayer);
+      
     }
 
     #endregion
@@ -437,30 +402,48 @@ public class Room
     //        "turnUid" : "asdawfsdawdasddwa",
     //        "private" : 0
 
-
+    
     public string roomID;
     public int status;
-    public string board;
-    public string uidOne;
-    public string uidTwo;
-    public string turnUid;
+    public int currentPlayer;
     public bool isPrivate;
-    public bool oneReady;
-    public bool twoReady;
 
+    
+    public user userOne;
+    public user userTwo;
 
-
-    public Room(string roomID, int status,string board,string uidOne,string uidTwo,string turnUid,bool isPrivate,bool oneReady,bool twoReady)
+    public Room(string roomID, string uidOne, string name,int currentPlayer,bool isPrivate)
     {
         this.roomID = roomID;
-        this.status = status;
-        this.board = board;
-        this.uidOne = uidOne;
-        this.uidTwo = uidTwo;
-        this.turnUid = turnUid;
+        this.status = 0;
         this.isPrivate = isPrivate;
-        this.oneReady = oneReady;
-        this.twoReady = twoReady;
+        this.currentPlayer = currentPlayer;
+
+        userOne = new user();
+        userTwo = new user();
+
+        userOne.uid = uidOne;
+        userOne.name = name;
+        userOne.input = "";
+        userOne.ready = false;
+        userOne.win = 0;
+
+        userTwo.uid = "";
+        userTwo.name = "";
+        userTwo.input = "";
+        userTwo.ready = false;
+        userTwo.win = 0;
+
     }
 
+    [System.Serializable]
+    public class user
+    {
+        public string uid;
+        public string name;
+        public string input;
+        public bool ready;
+        public int win;
+    }
 }
+
