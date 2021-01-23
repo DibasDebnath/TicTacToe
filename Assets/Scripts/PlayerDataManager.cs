@@ -20,9 +20,10 @@ public class PlayerDataManager : MonoBehaviour
 
     public readonly string READY = "ready";
     public readonly string ISPRIVATE = "isPrivate";
-    public readonly string CURRENTPLAYER = "CurrentPlayer";
+    public readonly string CURRENTPLAYER = "currentPlayer";
     public readonly string USERONE = "userOne";
     public readonly string USERTWO = "userTwo";
+    public readonly string INPUT = "input";
     public readonly string UID = "uid";
 
 
@@ -345,6 +346,19 @@ public class PlayerDataManager : MonoBehaviour
 
         FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(CURRENTPLAYER).SetValueAsync(currentPlayer);
       
+    }
+
+
+
+
+    public void onlineInput(int j, int k)
+    {
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        childUpdates[CURRENTPLAYER] = RefHolder.instance.gamePlay.currentPlayer;
+        childUpdates[USERONE+"/"+INPUT] = j.ToString()+k.ToString();
+
+
+        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);
     }
 
     #endregion

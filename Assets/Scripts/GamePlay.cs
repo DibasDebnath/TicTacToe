@@ -61,6 +61,10 @@ public class GamePlay : MonoBehaviour
             {
                 RefHolder.instance.uICon.takeInput = true;
             }
+            else
+            {
+                // Wait for opponents Turn
+            }
         }
         StartCountDown();
     }
@@ -89,7 +93,8 @@ public class GamePlay : MonoBehaviour
         }
         if (onlineMode)
         {
-            
+            string tmp = RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.GetRoomID()).Child(RefHolder.instance.dataManager.CURRENTPLAYER).Value.ToString();
+            currentPlayer = int.Parse(tmp);
         }
         else
         {
@@ -108,18 +113,19 @@ public class GamePlay : MonoBehaviour
         {
             RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
         }
-        else if (AIMode == false && onlineMode == true && currentPlayer == 1)
+        else if (AIMode == false && onlineMode == true)
         {
-            RefHolder.instance.uICon.playerText.text = "Creator Turn";
+            if(currentPlayer == onlinePlayer)
+            {
+                RefHolder.instance.uICon.playerText.text = "Your Turn";
+            }
+            else
+            {
+                RefHolder.instance.uICon.playerText.text = "Opponents Turn";
+            }
+            
         }
-        else if (AIMode == false && onlineMode == true && currentPlayer == 2)
-        {
-            RefHolder.instance.uICon.playerText.text = "Joiner Turn";
-        }
-        if (onlineMode)
-        {
-            //RefHolder.instance.dataManager.ResetBoard();
-        }
+        
         isMatchEnd = false;
         coutdownTimer = 0;
     }
@@ -197,7 +203,7 @@ public class GamePlay : MonoBehaviour
                         }
                         if (!isMatchEnd)
                         {
-                            SwithPlayer();
+                            SwithPlayer(j,k);
                         }
                         
                         break;
@@ -210,7 +216,7 @@ public class GamePlay : MonoBehaviour
                         }
                         if (!isMatchEnd)
                         {
-                            SwithPlayer();
+                            SwithPlayer(j,k);
                         }
                         break;
                     default:
@@ -340,22 +346,43 @@ public class GamePlay : MonoBehaviour
 
     }
 
-    private void SwithPlayer()
+    private void SwithPlayer(int j,int k)
     {
-        if(currentPlayer == 1)
+        if (onlineMode)
+        {
+            RefHolder.instance.dataManager.onlineInput(j, k);
+        }
+        if (currentPlayer == 1)
         {
             currentPlayer = 2;
-            if (AIMode)
+            if (!onlineMode)
             {
-                RefHolder.instance.uICon.playerText.text = "AI Turn";
+                if (AIMode)
+                {
+                    RefHolder.instance.uICon.playerText.text = "AI Turn";
+                }
+                else 
+                {
+                    RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+                }
+               
             }
             else
             {
-                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+                if (currentPlayer != onlinePlayer)
+                {
+                    RefHolder.instance.uICon.playerText.text = "Your Turn";
+                    RefHolder.instance.uICon.takeInput = true;
+                }
+                else
+                {
+                    RefHolder.instance.uICon.playerText.text = "Opponents Turn";
+                    RefHolder.instance.uICon.takeInput = false;
+                }
             }
-            Debug.Log("CurrentPlayer " + currentPlayer);
-
             
+            //Debug.Log("CurrentPlayer " + currentPlayer);
+
             StartCountDown();
 
 
@@ -365,34 +392,40 @@ public class GamePlay : MonoBehaviour
                 AIInput();
             }
 
-            if (onlineMode)
-            {
-                RefHolder.instance.dataManager.setTurnID(currentPlayer);
-                
-            }
             
-
         }
         else
         {
             currentPlayer = 1;
-            if(AIMode)
+            if (!onlineMode)
             {
-                RefHolder.instance.uICon.playerText.text = "Your Turn";
+                if (AIMode)
+                {
+                    RefHolder.instance.uICon.playerText.text = "Your Turn";
+                }
+                else if (!AIMode)
+                {
+                    RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+                }
             }
             else
             {
-                RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
+                if (currentPlayer != onlinePlayer)
+                {
+                    RefHolder.instance.uICon.playerText.text = "Your Turn";
+                }
+                else
+                {
+                    RefHolder.instance.uICon.playerText.text = "Opponents Turn";
+                }
             }
-            Debug.Log("CurrentPlayer " + currentPlayer);
+            
+            
+            //Debug.Log("CurrentPlayer " + currentPlayer);
             
             StartCountDown();
 
-            if (onlineMode)
-            {
-                RefHolder.instance.dataManager.setTurnID(currentPlayer);
-                
-            }
+            
         }
     }
 
@@ -407,25 +440,42 @@ public class GamePlay : MonoBehaviour
         //win
         if (endStatus)
         {
-            if(AIMode && currentPlayer == 2)
+            if (!onlineMode)
             {
-                RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
-            }
-            else if (AIMode && currentPlayer == 1)
-            {
-                RefHolder.instance.uICon.SetMatchEndStatusText("You Won");
+                if (AIMode && currentPlayer == 2)
+                {
+                    RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+                }
+                else if (AIMode && currentPlayer == 1)
+                {
+                    RefHolder.instance.uICon.SetMatchEndStatusText("You Won");
+                }
+                else
+                {
+                    RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+                }
             }
             else
             {
-                RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+
             }
+           
             StartCoroutine(WinAnimation());
         }
         else // draw
         {
-            RefHolder.instance.uICon.SetMatchEndStatusText("Match Draw");
-            RefHolder.instance.uICon.animCon.GamePanelOut();
-            RefHolder.instance.uICon.animCon.EndPanelIn();
+            if (!onlineMode)
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("Match Draw");
+                RefHolder.instance.uICon.animCon.GamePanelOut();
+                RefHolder.instance.uICon.animCon.EndPanelIn();
+            }
+            else
+            {
+
+            }
+            
+            
         }
         
         
@@ -446,16 +496,25 @@ public class GamePlay : MonoBehaviour
         {
             currentPlayer = 1;          
         }
-        if (AIMode && currentPlayer == 2)
+
+        if (!onlineMode)
         {
-            RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");    
+            if (AIMode && currentPlayer == 2)
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+            }
+            else
+            {
+                RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+            }
+            RefHolder.instance.uICon.animCon.GamePanelOut();
+            RefHolder.instance.uICon.animCon.EndPanelIn();
         }
         else
         {
-            RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+
         }
-        RefHolder.instance.uICon.animCon.GamePanelOut();
-        RefHolder.instance.uICon.animCon.EndPanelIn();
+        
     }
 
     IEnumerator WinAnimation()
@@ -466,8 +525,12 @@ public class GamePlay : MonoBehaviour
             winningButtonTransforms[i].GetComponent<Animator>().SetTrigger("Flash");
         }
         yield return new WaitForSeconds(1f);
-        RefHolder.instance.uICon.animCon.GamePanelOut();
-        RefHolder.instance.uICon.animCon.EndPanelIn();
+        if (!onlineMode)
+        {
+            RefHolder.instance.uICon.animCon.GamePanelOut();
+            RefHolder.instance.uICon.animCon.EndPanelIn();
+        }
+       
         //takeInput = false;
     }
 
@@ -581,7 +644,7 @@ public class GamePlay : MonoBehaviour
 
 
 
-
+    
 
 
 

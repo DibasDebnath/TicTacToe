@@ -433,6 +433,7 @@ public class UICon : MonoBehaviour
         takeInput = false;
         animCon.MatchMakingFriendsPanelOut();
         animCon.GamePanelIn();
+        RefHolder.instance.gamePlay.StartGame();
     }
 
 
