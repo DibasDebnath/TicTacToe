@@ -18,6 +18,7 @@ public class GamePlay : MonoBehaviour
     public bool isMatchEnd = false;
     private Coroutine CountDownCor;
     private float coutdownTimer;
+    public float TimerValue;
 
     private Button[,] buttonArray = new Button[3,3];
     private GameObject[,] OArray = new GameObject[3,3];
@@ -93,7 +94,7 @@ public class GamePlay : MonoBehaviour
         }
         if (onlineMode)
         {
-            string tmp = RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.GetRoomID()).Child(RefHolder.instance.dataManager.CURRENTPLAYER).Value.ToString();
+            string tmp = RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.CURRENTPLAYER).Value.ToString();
             currentPlayer = int.Parse(tmp);
         }
         else
@@ -180,13 +181,13 @@ public class GamePlay : MonoBehaviour
         
     }
 
-    private void ButtonClick(int j, int k)
+    public void ButtonClick(int j, int k)
     {
         Debug.Log("ButtonCLicked " + j + " " + k);
         //RefHolder.instance.playerInput.buttonClick(j, k);
         if (RefHolder.instance.uICon.takeInput)
         {
-            
+            RefHolder.instance.uICon.takeInput = false;
             if (board[j, k] == 0)
             {
                 RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
@@ -348,10 +349,7 @@ public class GamePlay : MonoBehaviour
 
     private void SwithPlayer(int j,int k)
     {
-        if (onlineMode)
-        {
-            RefHolder.instance.dataManager.onlineInput(j, k);
-        }
+        
         if (currentPlayer == 1)
         {
             currentPlayer = 2;
@@ -391,8 +389,11 @@ public class GamePlay : MonoBehaviour
                 // call ai here;
                 AIInput();
             }
+            if (onlineMode)
+            {
+                RefHolder.instance.dataManager.onlineInput(j, k);
+            }
 
-            
         }
         else
         {
@@ -413,19 +414,24 @@ public class GamePlay : MonoBehaviour
                 if (currentPlayer != onlinePlayer)
                 {
                     RefHolder.instance.uICon.playerText.text = "Your Turn";
+                    RefHolder.instance.uICon.takeInput = true;
                 }
                 else
                 {
                     RefHolder.instance.uICon.playerText.text = "Opponents Turn";
+                    RefHolder.instance.uICon.takeInput = false;
                 }
             }
-            
-            
-            //Debug.Log("CurrentPlayer " + currentPlayer);
-            
-            StartCountDown();
 
-            
+           
+            //Debug.Log("CurrentPlayer " + currentPlayer);
+
+            StartCountDown();
+            if (onlineMode)
+            {
+                RefHolder.instance.dataManager.onlineInput(j, k);
+            }
+
         }
     }
 
@@ -436,7 +442,7 @@ public class GamePlay : MonoBehaviour
         //Debug.LogError("asdad");
             StopCoroutine(CountDownCor);
             CountDownCor = null;
-        
+        RefHolder.instance.dataManager.ResetBothReady();
         //win
         if (endStatus)
         {
@@ -457,7 +463,14 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-
+                if (onlinePlayer == currentPlayer)
+                {
+                    RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
+                }
+                else
+                {
+                    RefHolder.instance.uICon.EndPanelTextSetUp("Opposition Won");
+                }
             }
            
             StartCoroutine(WinAnimation());
@@ -472,7 +485,9 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-
+                RefHolder.instance.uICon.EndPanelTextSetUp("Match Draw");
+                RefHolder.instance.uICon.animCon.GamePanelOut();
+                RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
             }
             
             
@@ -512,7 +527,16 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
-
+            if (onlinePlayer == currentPlayer)
+            {
+                RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
+            }
+            else
+            {
+                RefHolder.instance.uICon.EndPanelTextSetUp("Opposition Won");
+            }
+            RefHolder.instance.uICon.animCon.GamePanelOut();
+            RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
         }
         
     }
@@ -530,6 +554,11 @@ public class GamePlay : MonoBehaviour
             RefHolder.instance.uICon.animCon.GamePanelOut();
             RefHolder.instance.uICon.animCon.EndPanelIn();
         }
+        else
+        {
+            RefHolder.instance.uICon.animCon.GamePanelOut();
+            RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
+        }
        
         //takeInput = false;
     }
@@ -540,12 +569,12 @@ public class GamePlay : MonoBehaviour
     {
         if (CountDownCor == null)
         {
-            coutdownTimer = 5f;
+            coutdownTimer = TimerValue;
             CountDownCor = StartCoroutine(CoutDown());
         }
         else
         {
-            coutdownTimer = 5f;
+            coutdownTimer = TimerValue;
         }
     }
 

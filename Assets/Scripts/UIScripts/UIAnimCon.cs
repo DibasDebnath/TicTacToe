@@ -9,6 +9,7 @@ public class UIAnimCon : MonoBehaviour
     public Animator mainMenu; 
     public Animator gamePanel; 
     public Animator endPanel; 
+    public Animator endPanelOnline; 
     public Animator playOptionsPanel; 
     public Animator signInPanel; 
     public Animator PlayFriendsPanel; 
@@ -50,6 +51,14 @@ public class UIAnimCon : MonoBehaviour
     public void EndPanelOut()
     {
         endPanel.SetTrigger("PanelOut");
+    }
+    public void EndPanelOnlineIn()
+    {
+        endPanelOnline.SetTrigger("PanelIn");
+    }
+    public void EndPanelOnlineOut()
+    {
+        endPanelOnline.SetTrigger("PanelOut");
     }
     public void PlayOptionsIn()
     {

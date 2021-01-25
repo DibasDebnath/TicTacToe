@@ -154,7 +154,7 @@ public class PlayerDataManager : MonoBehaviour
 
         SetRoomID(roomID);
 
-        Room R = new Room(roomID, GetUID(), GetDisplayName(), Random.Range(0,2), true);
+        Room R = new Room(roomID, GetUID(), GetDisplayName(), Random.Range(1,3), true);
 
         FirebaseController.instance.database.RootReference.Child(ROOMS).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
         {
@@ -302,6 +302,49 @@ public class PlayerDataManager : MonoBehaviour
                 RefHolder.instance.uICon.StartGameOnlineFriends();
             }
 
+
+
+            if (oldDataSnapshot.Child(CURRENTPLAYER).Value.ToString() != args.Snapshot.Child(CURRENTPLAYER).Value.ToString())
+            {
+                Debug.LogError("1");
+                if(args.Snapshot.Child(CURRENTPLAYER).Value.ToString() == RefHolder.instance.gamePlay.onlinePlayer.ToString())
+                {
+                    Debug.LogError("2");
+
+                    if (args.Snapshot.Child(CURRENTPLAYER).Value.ToString() == "1")
+                    {
+                        Debug.LogError("3");
+
+                        string str = args.Snapshot.Child(USERONE).Child(INPUT).Value.ToString();
+
+                        char[] arr = str.ToCharArray();
+
+                        int j = int.Parse(arr[0].ToString());
+                        int k = int.Parse(arr[1].ToString());
+
+                        //Debug.Log("Button CLick " + j + k);
+                        RefHolder.instance.gamePlay.ButtonClick(j,k);
+                    }
+                    else
+                    {
+                        Debug.LogError("4");
+
+                        string str = args.Snapshot.Child(USERTWO).Child(INPUT).Value.ToString();
+
+                        char[] arr = str.ToCharArray();
+
+                        int j = int.Parse(arr[0].ToString());
+                        int k = int.Parse(arr[1].ToString());
+
+                        Debug.Log("Button CLick " + j + k);
+                        RefHolder.instance.gamePlay.ButtonClick(j, k);
+                    }
+                }
+            }
+
+
+            
+
             
 
 
@@ -336,7 +379,15 @@ public class PlayerDataManager : MonoBehaviour
     }
 
 
-    
+    public void ResetBothReady()
+    {
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        childUpdates[USERONE+"/"+READY] = false;
+        childUpdates[USERTWO + "/" + READY] = false;
+
+
+        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);
+    }
 
 
     

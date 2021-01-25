@@ -29,6 +29,11 @@ public class UICon : MonoBehaviour
     public Button exitButEnd;
     public TextMeshProUGUI matchEndStatus;
 
+    [Header("EndPanelOnline")]
+    public Button readyButEnd;
+    public Button backButEnd;
+    public TextMeshProUGUI matchOnlineEndStatus;
+
 
     [Header("Play Options")]
     public Button playLocalBut;
@@ -80,6 +85,8 @@ public class UICon : MonoBehaviour
         playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
         readyBut.onClick.AddListener(() => MatchMakingFriendsReadyButPress());
         matchMakingFriendsbackBut.onClick.AddListener(() => MatchMakingFriendsBackButPress());
+        readyButEnd.onClick.AddListener(() => EndPanelOnlineReadyButPress());
+        backButEnd.onClick.AddListener(() => EndPanelOnlineBackButPress());
 
 
 
@@ -429,9 +436,17 @@ public class UICon : MonoBehaviour
 
     public void StartGameOnlineFriends()
     {
-        RefHolder.instance.gamePlay.onlineMode = true;
+        
         takeInput = false;
-        animCon.MatchMakingFriendsPanelOut();
+        if (RefHolder.instance.gamePlay.onlineMode)
+        {
+            animCon.EndPanelOnlineOut();
+        }
+        else
+        {
+            RefHolder.instance.gamePlay.onlineMode = true;
+            animCon.MatchMakingFriendsPanelOut();
+        }
         animCon.GamePanelIn();
         RefHolder.instance.gamePlay.StartGame();
     }
@@ -445,6 +460,31 @@ public class UICon : MonoBehaviour
     {
         RefHolder.instance.dataManager.DeletePreviousRoomIfExists();
         SceneManager.LoadScene("Game");
+    }
+
+    #endregion
+
+
+
+    #region EndPanelOnline
+
+
+
+    public void EndPanelOnlineReadyButPress()
+    {
+        RefHolder.instance.dataManager.setUserReady();
+    }
+
+
+    public void EndPanelOnlineBackButPress()
+    {
+        RefHolder.instance.dataManager.SetRoomID("");
+        SceneManager.LoadScene("Game");
+    }
+
+    public void EndPanelTextSetUp(string txt)
+    {
+        matchOnlineEndStatus.text = txt;
     }
 
     #endregion

@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 146903243}
   - component: {fileID: 146903242}
   m_Layer: 5
-  m_Name: Play
+  m_Name: Ready
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5516,7 +5516,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Play
+  m_text: Ready
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b00774c0d7ec85845b7697101c231f68, type: 2}
   m_sharedMaterial: {fileID: -3443900425118526599, guid: b00774c0d7ec85845b7697101c231f68, type: 2}
@@ -6249,7 +6249,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Exit
+  m_text: Back
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b00774c0d7ec85845b7697101c231f68, type: 2}
   m_sharedMaterial: {fileID: -3443900425118526599, guid: b00774c0d7ec85845b7697101c231f68, type: 2}
@@ -6892,6 +6892,7 @@ MonoBehaviour:
   AIMode: 0
   onlineMode: 0
   isMatchEnd: 0
+  TimerValue: 500
   currentPlayer: 1
   onlinePlayer: 0
 --- !u!114 &1462668598
@@ -6929,6 +6930,9 @@ MonoBehaviour:
   optionsButEnd: {fileID: 683851184}
   exitButEnd: {fileID: 437843362}
   matchEndStatus: {fileID: 1076219630}
+  readyButEnd: {fileID: 146903242}
+  backButEnd: {fileID: 1623016433}
+  matchOnlineEndStatus: {fileID: 517890050}
   playLocalBut: {fileID: 844971029}
   playOnlineBut: {fileID: 304833589}
   playFriendsBut: {fileID: 429183211}
@@ -6963,6 +6967,7 @@ MonoBehaviour:
   mainMenu: {fileID: 1845170894}
   gamePanel: {fileID: 308008345}
   endPanel: {fileID: 1791661348}
+  endPanelOnline: {fileID: 895794668}
   playOptionsPanel: {fileID: 1840459610}
   signInPanel: {fileID: 1196896153}
   PlayFriendsPanel: {fileID: 675262381}
@@ -7836,7 +7841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1542830853
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8589,7 +8594,7 @@ GameObject:
   - component: {fileID: 1623016434}
   - component: {fileID: 1623016433}
   m_Layer: 5
-  m_Name: Exit
+  m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
