@@ -22,6 +22,10 @@ public class UICon : MonoBehaviour
     public TextMeshProUGUI playerText;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI gamePanelErorrText;
+    public TextMeshProUGUI playerOneName;
+    public TextMeshProUGUI playerTwoName;
+    public TextMeshProUGUI playerOneWin;
+    public TextMeshProUGUI playerTwoWin;
 
 
     [Header("EndPanel")]
@@ -29,12 +33,20 @@ public class UICon : MonoBehaviour
     public Button optionsButEnd;
     public Button exitButEnd;
     public TextMeshProUGUI matchEndStatus;
+    public TextMeshProUGUI playerOneNameEnd;
+    public TextMeshProUGUI playerTwoNameEnd;
+    public TextMeshProUGUI playerOneWinEnd;
+    public TextMeshProUGUI playerTwoWinEnd;
 
     [Header("EndPanelOnline")]
     public Button readyButEnd;
     public Button backButEnd;
     public TextMeshProUGUI matchOnlineEndStatus;
     public TextMeshProUGUI matchOnlineEndError;
+    public TextMeshProUGUI playerOneNameEndOnline;
+    public TextMeshProUGUI playerTwoNameEndOnline;
+    public TextMeshProUGUI playerOneWinEndOnline;
+    public TextMeshProUGUI playerTwoWinEndOnline;
 
 
     [Header("Play Options")]
@@ -92,7 +104,7 @@ public class UICon : MonoBehaviour
 
 
 
-        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.GameMusic, true);
+        RefHolder.instance.audioController.SetAtStart();
     }
 
 
@@ -148,6 +160,7 @@ public class UICon : MonoBehaviour
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.gamePlay.AIMode = false;
+        SetGamePanelTextAtStart("Player 1","Player 2","0","0");
         animCon.PlayOptionsOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStartLocal());
@@ -161,6 +174,7 @@ public class UICon : MonoBehaviour
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.gamePlay.AIMode = true;
+        SetGamePanelTextAtStart("Player 1", "AI", "0", "0");
         animCon.PlayOptionsOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStartLocal());
@@ -227,6 +241,8 @@ public class UICon : MonoBehaviour
             return;
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        playerOneWin.text = RefHolder.instance.gamePlay.player1Win.ToString();
+        playerTwoWin.text = RefHolder.instance.gamePlay.player2Win.ToString();
         animCon.EndPanelOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStartEnd());
@@ -244,7 +260,7 @@ public class UICon : MonoBehaviour
             return;
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
-        Application.Quit();
+        SceneManager.LoadScene("Game");
     }
     private void OptionsButPressEnd()
     {
@@ -260,6 +276,15 @@ public class UICon : MonoBehaviour
         matchEndStatus.text = txt;
     }
 
+
+    public void SetEndPanelTextAtEnd(string player1, string player2, string player1W, string player2W)
+    {
+        playerOneNameEnd.text = player1;
+        playerTwoNameEnd.text = player2;
+        playerOneWinEnd.text = player1W;
+        playerTwoWinEnd.text = player2W;
+    }
+
     #endregion
 
     #region GamePanel
@@ -267,6 +292,16 @@ public class UICon : MonoBehaviour
     public void SetPlayerText(string txt)
     {
         playerText.text = txt;
+    }
+
+
+
+    public void SetGamePanelTextAtStart(string player1,string player2,string player1W,string player2W)
+    {
+        playerOneName.text = player1;
+        playerTwoName.text = player2;
+        playerOneWin.text = player1W;
+        playerTwoWin.text = player2W;
     }
 
     #endregion
@@ -301,7 +336,15 @@ public class UICon : MonoBehaviour
             takeInput = true;
             if (RefHolder.instance.dataManager.GetDisplayName() != nameInput.text)
             {
-                FirebaseController.instance.updateDesplayName(nameInput.text);
+                if(nameInput.text == "")
+                {
+                    FirebaseController.instance.updateDesplayName("player");
+                }
+                else
+                {
+                    FirebaseController.instance.updateDesplayName(nameInput.text);
+                }
+                
             }
             RefHolder.instance.dataManager.UpdateUserData();
             //Debug.LogError("display name '"+ FirebaseController.instance.user.DisplayName + "'");
@@ -491,6 +534,16 @@ public class UICon : MonoBehaviour
     {
         matchOnlineEndStatus.text = txt;
         matchOnlineEndError.text = "Press Ready to Play Again";
+    }
+
+
+
+    public void SetEndPanelTextAtEndOnline(string player1, string player2, string player1W, string player2W)
+    {
+        playerOneNameEndOnline.text = player1;
+        playerTwoNameEndOnline.text = player2;
+        playerOneWinEndOnline.text = player1W;
+        playerTwoWinEndOnline.text = player2W;
     }
 
     #endregion

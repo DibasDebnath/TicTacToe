@@ -9,7 +9,7 @@ public class PlayerDataManager : MonoBehaviour
 {
 
     public readonly string USER = "User";
-    public readonly string NAME = "Name";
+    public readonly string NAME = "name";
     public readonly string ROOMS = "Rooms";
     public readonly string ROOMID = "roomID";
     public readonly string MATCH = "match";
@@ -32,7 +32,8 @@ public class PlayerDataManager : MonoBehaviour
     public int winValue;
     public string roomIDValue;
 
-    
+    private string player1Name;
+    private string player2Name;
 
     public bool roomCreated;
     public bool roomJoined;
@@ -296,8 +297,14 @@ public class PlayerDataManager : MonoBehaviour
                 || (oldDataSnapshot.Child(USERTWO).Child(READY).Value.ToString() == "False" && args.Snapshot.Child(USERTWO).Child(READY).Value.ToString() == "True" && args.Snapshot.Child(USERONE).Child(READY).Value.ToString() == "True"))
             {
                 // Start Game
-                
-                
+
+
+
+                RefHolder.instance.uICon.SetGamePanelTextAtStart(oldDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
+                    oldDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
+                    oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
+                    oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
+
                 Debug.Log("start Game");
                 RefHolder.instance.uICon.StartGameOnlineFriends();
             }
@@ -474,6 +481,14 @@ public class PlayerDataManager : MonoBehaviour
 
     }
 
+
+    public void SetEndPanelOnlineEnd()
+    {
+        RefHolder.instance.uICon.SetEndPanelTextAtEndOnline(oldDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
+                    oldDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
+                    oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
+                    oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
+    }
 
 
 

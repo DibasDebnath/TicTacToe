@@ -13,6 +13,10 @@ public class AudioController : MonoBehaviour
 
     public readonly String GameMusic = "GameMusic";
     public readonly String Tap = "Tap";
+
+
+
+    public readonly String Music = "Music";
     
 
 
@@ -31,10 +35,11 @@ public class AudioController : MonoBehaviour
         }
     }
 
+    
 
     public void Play(string name)
     {
-        if (PlayerPrefs.GetInt("soundoff") == 0)
+        if (PlayerPrefs.GetInt(Music,1) == 1)
         {
             Sound s = Array.Find(sounds, sound => sound.audioClipName == name);
             s.audioSource.Play();
@@ -44,7 +49,7 @@ public class AudioController : MonoBehaviour
 
     public void Play(string name, bool play)
     {
-        if (PlayerPrefs.GetInt("soundoff") == 0)
+        if (PlayerPrefs.GetInt(Music,1) == 1)
         {
             Sound s = Array.Find(sounds, sound => sound.audioClipName == name);
             s.audioSource.Play();
@@ -69,7 +74,7 @@ public class AudioController : MonoBehaviour
     {
 
 
-        if (PlayerPrefs.GetInt("musicoff") == 0)
+        if (PlayerPrefs.GetInt(Music) == 0)
         {
 
             Sound s = Array.Find(sounds, sound => sound.audioClipName == name);
@@ -108,32 +113,44 @@ public class AudioController : MonoBehaviour
 
     public void offMusic()
     {
-        if (PlayerPrefs.GetInt("musicoff") == 0)
+        if (PlayerPrefs.GetInt(Music,1) == 1)
         {
-            PlayerPrefs.SetInt("musicoff", 1);
-            //Stop(MENU_BG);
+            PlayerPrefs.SetInt(Music, 0);
+            Stop(GameMusic);
             MusicOn.SetActive(false);
             MusicOff.SetActive(true);
         }
 
-        else if (PlayerPrefs.GetInt("musicoff") == 1)
+        else if (PlayerPrefs.GetInt(Music,1) == 0)
         {
-            PlayerPrefs.SetInt("musicoff", 0);
-            //PlayGamePlayMusic(MENU_BG);
+            PlayerPrefs.SetInt(Music, 1);
+            Play(GameMusic,true);
             MusicOn.SetActive(true);
             MusicOff.SetActive(false);
         }
-        if (PlayerPrefs.GetInt("soundoff") == 0)
-        {
-            PlayerPrefs.SetInt("soundoff", 1);
-
-        }
-        else if (PlayerPrefs.GetInt("soundoff") == 1)
-        {
-
-            PlayerPrefs.SetInt("soundoff", 0);
-
-        }
+        
     }
+
+
+
+    public void SetAtStart()
+    {
+        if (PlayerPrefs.GetInt(Music,1) == 0)
+        {
+            Stop(GameMusic);
+            MusicOn.SetActive(false);
+            MusicOff.SetActive(true);
+        }
+
+        else if (PlayerPrefs.GetInt(Music,1) == 1)
+        {
+           
+            Play(GameMusic, true);
+            MusicOn.SetActive(true);
+            MusicOff.SetActive(false);
+        }
+
+    }
+
 
 }

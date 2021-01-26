@@ -29,6 +29,9 @@ public class GamePlay : MonoBehaviour
     public int currentPlayer;
     public int onlinePlayer;
 
+    public int player1Win = 0;
+    public int player2Win = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -464,14 +467,24 @@ public class GamePlay : MonoBehaviour
                 if (AIMode && currentPlayer == 2)
                 {
                     RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+                    player2Win += 1;
                 }
                 else if (AIMode && currentPlayer == 1)
                 {
                     RefHolder.instance.uICon.SetMatchEndStatusText("You Won");
+                    player1Win += 1;
                 }
                 else
                 {
                     RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+                    if(currentPlayer == 1)
+                    {
+                        player1Win += 1;
+                    }
+                    else
+                    {
+                        player2Win += 1;
+                    }
                 }
             }
             else
@@ -494,6 +507,15 @@ public class GamePlay : MonoBehaviour
             if (!onlineMode)
             {
                 RefHolder.instance.uICon.SetMatchEndStatusText("Match Draw");
+                if (AIMode)
+                {
+                    RefHolder.instance.uICon.SetEndPanelTextAtEnd("Player 1", "AI", player1Win.ToString(), player2Win.ToString());
+                }
+                else
+                {
+                    RefHolder.instance.uICon.SetEndPanelTextAtEnd("Player 1", "Player 2", player1Win.ToString(), player2Win.ToString());
+                }
+                
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelIn();
                 RefHolder.instance.uICon.takeInput = true;
@@ -502,6 +524,7 @@ public class GamePlay : MonoBehaviour
             {
                 RefHolder.instance.uICon.EndPanelTextSetUp("Match Draw");
                 RefHolder.instance.uICon.readyButEnd.interactable = true;
+
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
                 if (onlinePlayer == currentPlayer)
@@ -580,12 +603,24 @@ public class GamePlay : MonoBehaviour
         yield return new WaitForSeconds(1f);
         if (!onlineMode)
         {
+            if (AIMode)
+            {
+                RefHolder.instance.uICon.SetEndPanelTextAtEnd("Player 1", "AI", player1Win.ToString(), player2Win.ToString());
+            }
+            else
+            {
+                RefHolder.instance.uICon.SetEndPanelTextAtEnd("Player 1", "Player 2", player1Win.ToString(), player2Win.ToString());
+            }
             RefHolder.instance.uICon.animCon.GamePanelOut();
             RefHolder.instance.uICon.animCon.EndPanelIn();
         }
         else
         {
             RefHolder.instance.uICon.readyButEnd.interactable = true;
+
+            RefHolder.instance.dataManager.SetEndPanelOnlineEnd();
+
+
             RefHolder.instance.uICon.animCon.GamePanelOut();
             RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
         }
