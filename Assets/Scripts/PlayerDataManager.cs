@@ -194,7 +194,7 @@ public class PlayerDataManager : MonoBehaviour
     public void JoinRoom(string roomID)
     {
 
-        Debug.LogError(roomID);
+        //Debug.LogError(roomID);
         SetRoomID(roomID);
 
         FirebaseController.instance.database.RootReference.Child(ROOMS).OrderByKey().EqualTo(roomID).GetValueAsync().ContinueWith(task =>
@@ -303,19 +303,19 @@ public class PlayerDataManager : MonoBehaviour
             }
 
 
-
+            //Getting Input
             if (oldDataSnapshot.Child(CURRENTPLAYER).Value.ToString() != args.Snapshot.Child(CURRENTPLAYER).Value.ToString())
             {
                 Debug.LogError("1");
                 if(args.Snapshot.Child(CURRENTPLAYER).Value.ToString() == RefHolder.instance.gamePlay.onlinePlayer.ToString())
                 {
                     Debug.LogError("2");
-
+                    RefHolder.instance.uICon.takeInput = true;
                     if (args.Snapshot.Child(CURRENTPLAYER).Value.ToString() == "1")
                     {
                         Debug.LogError("3");
 
-                        string str = args.Snapshot.Child(USERONE).Child(INPUT).Value.ToString();
+                        string str = args.Snapshot.Child(USERTWO).Child(INPUT).Value.ToString();
 
                         char[] arr = str.ToCharArray();
 
@@ -329,7 +329,7 @@ public class PlayerDataManager : MonoBehaviour
                     {
                         Debug.LogError("4");
 
-                        string str = args.Snapshot.Child(USERTWO).Child(INPUT).Value.ToString();
+                        string str = args.Snapshot.Child(USERONE).Child(INPUT).Value.ToString();
 
                         char[] arr = str.ToCharArray();
 
@@ -343,14 +343,20 @@ public class PlayerDataManager : MonoBehaviour
             }
 
 
-            
+            // if Match Ended Unconditionally
+            if(oldDataSnapshot.Child(USERONE).Child(READY).Value.ToString() == "True" &&
+                oldDataSnapshot.Child(USERTWO).Child(READY).Value.ToString() == "True"&&
+                args.Snapshot.Child(USERONE).Child(READY).Value.ToString() == "False" &&
+                args.Snapshot.Child(USERTWO).Child(READY).Value.ToString() == "False" )
+            {
+                //RefHolder.instance.gamePlay.EndMatch(false);
+            }
 
-            
 
 
 
             //replace old at the end
-            oldDataSnapshot = args.Snapshot;
+                oldDataSnapshot = args.Snapshot;
         }
         else
         {
@@ -382,7 +388,7 @@ public class PlayerDataManager : MonoBehaviour
     public void ResetBothReady()
     {
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        childUpdates[USERONE+"/"+READY] = false;
+        childUpdates[USERONE + "/" + READY] = false;
         childUpdates[USERTWO + "/" + READY] = false;
 
 
@@ -392,11 +398,31 @@ public class PlayerDataManager : MonoBehaviour
 
     
 
-    public void setTurnID(int currentPlayer)
+   public void EndMatchOnline(bool win)
     {
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        childUpdates[USERONE + "/" + READY] = false;
+        childUpdates[USERTWO + "/" + READY] = false;
+        if (win)
+        {
+            int tmp;
+            if (RefHolder.instance.gamePlay.onlinePlayer == 1)
+            {
+                //Debug.LogError("parse " + oldDataSnapshot.Child(USERONE).Child(WIN).ToString());
+                tmp = int.Parse(oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString()) + 1;
+                childUpdates[USERONE + "/" + WIN] = tmp;
+            }
+            else
+            {
+                //Debug.LogError("parse " + oldDataSnapshot.Child(USERTWO).Child(WIN).ToString());
 
-        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(CURRENTPLAYER).SetValueAsync(currentPlayer);
-      
+                tmp = int.Parse(oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString()) + 1;
+                childUpdates[USERTWO + "/" + WIN] = tmp;
+            }
+            
+        }
+        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);
+
     }
 
 
@@ -405,8 +431,17 @@ public class PlayerDataManager : MonoBehaviour
     public void onlineInput(int j, int k)
     {
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        childUpdates[CURRENTPLAYER] = RefHolder.instance.gamePlay.currentPlayer;
-        childUpdates[USERONE+"/"+INPUT] = j.ToString()+k.ToString();
+        if (RefHolder.instance.gamePlay.currentPlayer == 1)
+        {          
+            childUpdates[CURRENTPLAYER] = 2;
+            childUpdates[USERONE + "/" + INPUT] = j.ToString() + k.ToString();
+        }
+        else
+        {
+            childUpdates[CURRENTPLAYER] = 1;
+            childUpdates[USERTWO + "/" + INPUT] = j.ToString() + k.ToString();
+        }
+        
 
 
         FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);

@@ -21,6 +21,7 @@ public class UICon : MonoBehaviour
     [Header("GamePanel")]
     public TextMeshProUGUI playerText;
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI gamePanelErorrText;
 
 
     [Header("EndPanel")]
@@ -33,6 +34,7 @@ public class UICon : MonoBehaviour
     public Button readyButEnd;
     public Button backButEnd;
     public TextMeshProUGUI matchOnlineEndStatus;
+    public TextMeshProUGUI matchOnlineEndError;
 
 
     [Header("Play Options")]
@@ -472,6 +474,9 @@ public class UICon : MonoBehaviour
 
     public void EndPanelOnlineReadyButPress()
     {
+        readyButEnd.interactable = false;
+        gamePanelErorrText.text = "";
+        matchOnlineEndError.text = "Waiting For Other Player to Be ready";
         RefHolder.instance.dataManager.setUserReady();
     }
 
@@ -485,6 +490,7 @@ public class UICon : MonoBehaviour
     public void EndPanelTextSetUp(string txt)
     {
         matchOnlineEndStatus.text = txt;
+        matchOnlineEndError.text = "Press Ready to Play Again";
     }
 
     #endregion

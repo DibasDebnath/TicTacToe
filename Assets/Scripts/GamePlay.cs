@@ -67,6 +67,10 @@ public class GamePlay : MonoBehaviour
                 // Wait for opponents Turn
             }
         }
+        else
+        {
+            RefHolder.instance.uICon.takeInput = true;
+        }
         StartCountDown();
     }
 
@@ -96,6 +100,7 @@ public class GamePlay : MonoBehaviour
         {
             string tmp = RefHolder.instance.dataManager.oldDataSnapshot.Child(RefHolder.instance.dataManager.CURRENTPLAYER).Value.ToString();
             currentPlayer = int.Parse(tmp);
+            Debug.Log("Current player at first " + tmp);
         }
         else
         {
@@ -110,7 +115,7 @@ public class GamePlay : MonoBehaviour
         {
             RefHolder.instance.uICon.playerText.text = "Your Turn";
         }
-        else if(AIMode == true && onlineMode == false)
+        else if(AIMode == false && onlineMode == false)
         {
             RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
         }
@@ -124,7 +129,11 @@ public class GamePlay : MonoBehaviour
             {
                 RefHolder.instance.uICon.playerText.text = "Opponents Turn";
             }
-            
+
+        }
+        else
+        {
+            RefHolder.instance.uICon.playerText.text = "Player " + currentPlayer;
         }
         
         isMatchEnd = false;
@@ -184,14 +193,19 @@ public class GamePlay : MonoBehaviour
     public void ButtonClick(int j, int k)
     {
         Debug.Log("ButtonCLicked " + j + " " + k);
+        
         //RefHolder.instance.playerInput.buttonClick(j, k);
         if (RefHolder.instance.uICon.takeInput)
         {
-            RefHolder.instance.uICon.takeInput = false;
+            //RefHolder.instance.uICon.takeInput = false;
             if (board[j, k] == 0)
             {
+                if (onlineMode)
+                {
+                    RefHolder.instance.dataManager.onlineInput(j, k);
+                }
                 RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
-                board[j, k] = currentPlayer;               
+                board[j, k] = currentPlayer;
                 buttonArray[j, k].interactable = false;
                 switch (currentPlayer)
                 {
@@ -204,7 +218,7 @@ public class GamePlay : MonoBehaviour
                         }
                         if (!isMatchEnd)
                         {
-                            SwithPlayer(j,k);
+                            SwithPlayer();
                         }
                         
                         break;
@@ -217,7 +231,7 @@ public class GamePlay : MonoBehaviour
                         }
                         if (!isMatchEnd)
                         {
-                            SwithPlayer(j,k);
+                            SwithPlayer();
                         }
                         break;
                     default:
@@ -347,11 +361,12 @@ public class GamePlay : MonoBehaviour
 
     }
 
-    private void SwithPlayer(int j,int k)
+    private void SwithPlayer()
     {
         
         if (currentPlayer == 1)
         {
+            
             currentPlayer = 2;
             if (!onlineMode)
             {
@@ -367,7 +382,7 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-                if (currentPlayer != onlinePlayer)
+                if (currentPlayer == onlinePlayer)
                 {
                     RefHolder.instance.uICon.playerText.text = "Your Turn";
                     RefHolder.instance.uICon.takeInput = true;
@@ -389,14 +404,12 @@ public class GamePlay : MonoBehaviour
                 // call ai here;
                 AIInput();
             }
-            if (onlineMode)
-            {
-                RefHolder.instance.dataManager.onlineInput(j, k);
-            }
+            
 
         }
         else
         {
+            
             currentPlayer = 1;
             if (!onlineMode)
             {
@@ -411,7 +424,7 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
-                if (currentPlayer != onlinePlayer)
+                if (currentPlayer == onlinePlayer)
                 {
                     RefHolder.instance.uICon.playerText.text = "Your Turn";
                     RefHolder.instance.uICon.takeInput = true;
@@ -427,22 +440,22 @@ public class GamePlay : MonoBehaviour
             //Debug.Log("CurrentPlayer " + currentPlayer);
 
             StartCountDown();
-            if (onlineMode)
-            {
-                RefHolder.instance.dataManager.onlineInput(j, k);
-            }
 
+            
         }
     }
 
-    private void EndMatch(bool endStatus)
+    public void EndMatch(bool endStatus)
     {
         isMatchEnd = true;
         coutdownTimer = 0f;
         //Debug.LogError("asdad");
+        if (CountDownCor != null)
+        {
             StopCoroutine(CountDownCor);
-            CountDownCor = null;
-        RefHolder.instance.dataManager.ResetBothReady();
+        }
+        CountDownCor = null;
+        //RefHolder.instance.dataManager.ResetBothReady();
         //win
         if (endStatus)
         {
@@ -466,6 +479,7 @@ public class GamePlay : MonoBehaviour
                 if (onlinePlayer == currentPlayer)
                 {
                     RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
+                    RefHolder.instance.dataManager.EndMatchOnline(true);
                 }
                 else
                 {
@@ -482,12 +496,18 @@ public class GamePlay : MonoBehaviour
                 RefHolder.instance.uICon.SetMatchEndStatusText("Match Draw");
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelIn();
+                RefHolder.instance.uICon.takeInput = true;
             }
             else
             {
                 RefHolder.instance.uICon.EndPanelTextSetUp("Match Draw");
+                RefHolder.instance.uICon.readyButEnd.interactable = true;
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
+                if (onlinePlayer == currentPlayer)
+                {
+                    RefHolder.instance.dataManager.EndMatchOnline(false);
+                }
             }
             
             
@@ -499,46 +519,55 @@ public class GamePlay : MonoBehaviour
 
     private void EndMatchCountdown()
     {
-        
-        StopCoroutine(CountDownCor);
-        CountDownCor = null;
-        isMatchEnd = true;
         if (currentPlayer == 1)
         {
-            currentPlayer = 2;            
+            currentPlayer = 2;
         }
         else
         {
-            currentPlayer = 1;          
+            currentPlayer = 1;
         }
+        EndMatch(true);
+        //StopCoroutine(CountDownCor);
+        //CountDownCor = null;
+        //isMatchEnd = true;
+        //if (currentPlayer == 1)
+        //{
+        //    currentPlayer = 2;
+        //}
+        //else
+        //{
+        //    currentPlayer = 1;
+        //}
 
-        if (!onlineMode)
-        {
-            if (AIMode && currentPlayer == 2)
-            {
-                RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
-            }
-            else
-            {
-                RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
-            }
-            RefHolder.instance.uICon.animCon.GamePanelOut();
-            RefHolder.instance.uICon.animCon.EndPanelIn();
-        }
-        else
-        {
-            if (onlinePlayer == currentPlayer)
-            {
-                RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
-            }
-            else
-            {
-                RefHolder.instance.uICon.EndPanelTextSetUp("Opposition Won");
-            }
-            RefHolder.instance.uICon.animCon.GamePanelOut();
-            RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
-        }
-        
+        //if (!onlineMode)
+        //{
+        //    if (AIMode && currentPlayer == 2)
+        //    {
+        //        RefHolder.instance.uICon.SetMatchEndStatusText("AI Won");
+        //    }
+        //    else
+        //    {
+        //        RefHolder.instance.uICon.SetMatchEndStatusText("Player " + currentPlayer + " Won");
+        //    }
+        //    RefHolder.instance.uICon.animCon.GamePanelOut();
+        //    RefHolder.instance.uICon.animCon.EndPanelIn();
+        //    RefHolder.instance.uICon.takeInput = true;
+        //}
+        //else
+        //{
+        //    if (onlinePlayer == currentPlayer)
+        //    {
+        //        RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
+        //    }
+        //    else
+        //    {
+        //        RefHolder.instance.uICon.EndPanelTextSetUp("Opposition Won");
+        //    }
+        //    RefHolder.instance.uICon.animCon.GamePanelOut();
+        //    RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
+        //}
+
     }
 
     IEnumerator WinAnimation()
@@ -556,10 +585,12 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
+            RefHolder.instance.uICon.readyButEnd.interactable = true;
             RefHolder.instance.uICon.animCon.GamePanelOut();
             RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
         }
-       
+        RefHolder.instance.uICon.takeInput = true;
+
         //takeInput = false;
     }
 
@@ -574,7 +605,9 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
+            StopCoroutine(CountDownCor);
             coutdownTimer = TimerValue;
+            CountDownCor = StartCoroutine(CoutDown());
         }
     }
 
@@ -590,7 +623,17 @@ public class GamePlay : MonoBehaviour
         coutdownTimer = 0f;
         //Debug.LogError("as "+coutdownTimer);
         RefHolder.instance.uICon.takeInput = false;
-        EndMatchCountdown();
+        if (!onlineMode)
+        {
+            EndMatchCountdown();
+        }
+        else
+        {
+            RefHolder.instance.uICon.gamePanelErorrText.text = "Waiting for Other Player";
+            yield return new WaitForSeconds(2f);
+            EndMatchCountdown();
+        }
+        
 
     }
 
