@@ -69,8 +69,12 @@ public class FirebaseController : MonoBehaviour
 
     void OnDestroy()
     {
-        auth.StateChanged -= AuthStateChanged;
-        auth = null;
+        if(auth != null)
+        {
+            auth.StateChanged -= AuthStateChanged;
+            auth = null;
+        }
+        
     }
 
     // Update is called once per frame

@@ -51,7 +51,10 @@ public class PlayerDataManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         if(FirebaseController.instance.user != null)
         {
-            UpdateUserData();
+            GetUserData();
+            yield return new WaitForSeconds(1f);
+            SetMatchValue(matchValue);
+            SetWinValue(winValue);
         }
         
         
@@ -95,13 +98,13 @@ public class PlayerDataManager : MonoBehaviour
     }
     public string GetDisplayName()
     {
-        if (FirebaseController.instance.isSignedIn != false)
+        if(FirebaseController.instance.user != null)
         {
             return FirebaseController.instance.user.DisplayName;
         }
         else
         {
-            return "Player";
+            return "player";
         }
     }
 
@@ -163,14 +166,24 @@ public class PlayerDataManager : MonoBehaviour
                     if (childSnapshot.Child(GetUID()) == null)
                     {
                         Debug.Log("Found Null");
-
+                        UpdateUserData();
                     }
                     else
                     {
-                        
+                        int m = int.Parse(childSnapshot.Child(MATCH).Value.ToString());
+                        int w = int.Parse(childSnapshot.Child(WIN).Value.ToString());
                         Debug.Log("User Exists");
-                        matchValue = int.Parse(childSnapshot.Child(MATCH).Value.ToString());
-                        winValue = int.Parse(childSnapshot.Child(WIN).Value.ToString());
+                        
+          
+                        if(GetMatchValue() > m)
+                        {
+                            UpdateUserData();
+                        }
+                        else
+                        {
+                            matchValue = m;
+                            winValue = w;
+                        }
                         return;
 
                     }
@@ -272,7 +285,7 @@ public class PlayerDataManager : MonoBehaviour
                         childUpdates[UID] = GetUID();
                         childUpdates[NAME] = GetDisplayName();
 
-                        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).Child(USERTWO).Child(UID).UpdateChildrenAsync(childUpdates);
+                        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).Child(USERTWO).UpdateChildrenAsync(childUpdates);
                         //FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(USERTWO).Child(NAME).SetValueAsync(GetDisplayName());
                         //DeletePreviousRoomIfExists();
                         return;
@@ -329,6 +342,7 @@ public class PlayerDataManager : MonoBehaviour
 
         if (args.Snapshot != null && args.Snapshot.ChildrenCount > 0)
         {
+            newDataSnapshot = args.Snapshot;
             if (oldDataSnapshot == null)
             {
                 //Save old Data at first 
@@ -352,10 +366,10 @@ public class PlayerDataManager : MonoBehaviour
 
 
 
-                RefHolder.instance.uICon.SetGamePanelTextAtStart(oldDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
-                    oldDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
-                    oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
-                    oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
+                RefHolder.instance.uICon.SetGamePanelTextAtStart(newDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
+                    newDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
+                    newDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
+                    newDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
 
                 Debug.Log("start Game");
                 RefHolder.instance.uICon.StartGameOnlineFriends();
@@ -468,23 +482,20 @@ public class PlayerDataManager : MonoBehaviour
             if (RefHolder.instance.gamePlay.onlinePlayer == 1)
             {
                 //Debug.LogError("parse " + oldDataSnapshot.Child(USERONE).Child(WIN).ToString());
-                tmp = int.Parse(oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString()) + 1;
+                tmp = int.Parse(newDataSnapshot.Child(USERONE).Child(WIN).Value.ToString()) + 1;
                 childUpdates[USERONE + "/" + WIN] = tmp;
             }
             else
             {
                 //Debug.LogError("parse " + oldDataSnapshot.Child(USERTWO).Child(WIN).ToString());
 
-                tmp = int.Parse(oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString()) + 1;
+                tmp = int.Parse(newDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString()) + 1;
                 childUpdates[USERTWO + "/" + WIN] = tmp;
             }
             
         }
-        if (RefHolder.instance.gamePlay.onlinePlayer == RefHolder.instance.gamePlay.currentPlayer)
-        {
-            IncreaseMatchStat(win);
 
-        }
+        
 
         FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);
 
@@ -545,18 +556,22 @@ public class PlayerDataManager : MonoBehaviour
 
     public void SetEndPanelOnlineEnd()
     {
-        RefHolder.instance.uICon.SetEndPanelTextAtEndOnline(oldDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
-                    oldDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
-                    oldDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
-                    oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
+        RefHolder.instance.uICon.SetEndPanelTextAtEndOnline(newDataSnapshot.Child(USERONE).Child(NAME).Value.ToString(),
+                    newDataSnapshot.Child(USERTWO).Child(NAME).Value.ToString(),
+                    newDataSnapshot.Child(USERONE).Child(WIN).Value.ToString(),
+                    newDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
     }
 
     public void IncreaseMatchStat(bool win)
     {
         SetMatchValue(GetMatchValue() + 1);
-        if (win)
+
+        if (RefHolder.instance.gamePlay.onlinePlayer == RefHolder.instance.gamePlay.currentPlayer)
         {
-            SetWinValue(GetWinValue() + 1);
+            if (win)
+            {
+                SetWinValue(GetWinValue() + 1);
+            }
         }
     }
 

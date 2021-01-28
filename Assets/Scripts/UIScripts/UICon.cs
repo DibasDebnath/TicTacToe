@@ -230,7 +230,7 @@ public class UICon : MonoBehaviour
             return;
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
-        if (FirebaseController.instance.isSignedIn == false)
+        if (FirebaseController.instance.user == null)
         {
             animCon.PlayOptionsOut();
             if(RefHolder.instance.dataManager.GetDisplayName() != "")
@@ -379,7 +379,7 @@ public class UICon : MonoBehaviour
             }
 
 
-            RefHolder.instance.dataManager.UpdateUserData();
+            //RefHolder.instance.dataManager.UpdateUserData();
             //Debug.LogError("display name '"+ FirebaseController.instance.user.DisplayName + "'");
             animCon.PlayOptionsIn();
             animCon.SignInOut();
@@ -568,6 +568,7 @@ public class UICon : MonoBehaviour
 
     public void EndPanelOnlineBackButPress()
     {
+        RefHolder.instance.dataManager.DeletePreviousRoomIfExists();
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.dataManager.SetRoomID("");
         SceneManager.LoadScene("Game");
@@ -599,12 +600,12 @@ public class UICon : MonoBehaviour
 
     public void SetTextOfUserPanel(string email,string match, string win,string name)
     {
-        int m = int.Parse(match);
-        int w = int.Parse(win);
+        float m = int.Parse(match);
+        float w = int.Parse(win);
         float percent;
         if (m != 0 && w != 0)
         {
-            percent = ( w/m ) * 100;
+            percent = w/m * 100;
         }
         else
         {

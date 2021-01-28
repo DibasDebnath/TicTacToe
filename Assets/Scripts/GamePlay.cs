@@ -489,6 +489,7 @@ public class GamePlay : MonoBehaviour
             }
             else
             {
+                RefHolder.instance.dataManager.IncreaseMatchStat(true);
                 if (onlinePlayer == currentPlayer)
                 {
                     RefHolder.instance.uICon.EndPanelTextSetUp("You Win");
@@ -527,6 +528,7 @@ public class GamePlay : MonoBehaviour
                 RefHolder.instance.dataManager.SetEndPanelOnlineEnd();
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
+                RefHolder.instance.dataManager.IncreaseMatchStat(false);
                 if (onlinePlayer == currentPlayer)
                 {
                     RefHolder.instance.dataManager.EndMatchOnline(false);
@@ -664,9 +666,17 @@ public class GamePlay : MonoBehaviour
         }
         else
         {
-            RefHolder.instance.uICon.gamePanelErorrText.text = "Waiting for Other Player";
-            yield return new WaitForSeconds(5f);
-            EndMatchCountdown();
+            if(onlinePlayer != currentPlayer)
+            {
+                RefHolder.instance.uICon.gamePanelErorrText.text = "Waiting for Other Player";
+                yield return new WaitForSeconds(5f);
+                EndMatchCountdown();
+            }
+            else
+            {
+                EndMatchCountdown();
+            }
+            
         }
         
 
