@@ -524,7 +524,7 @@ public class GamePlay : MonoBehaviour
             {
                 RefHolder.instance.uICon.EndPanelTextSetUp("Match Draw");
                 RefHolder.instance.uICon.readyButEnd.interactable = true;
-
+                RefHolder.instance.dataManager.SetEndPanelOnlineEnd();
                 RefHolder.instance.uICon.animCon.GamePanelOut();
                 RefHolder.instance.uICon.animCon.EndPanelOnlineIn();
                 if (onlinePlayer == currentPlayer)
@@ -649,7 +649,7 @@ public class GamePlay : MonoBehaviour
     IEnumerator CoutDown()
     {
 
-        while (coutdownTimer > 0)
+        while (coutdownTimer > 0.1f)
         {
             yield return new WaitForSeconds(0.1f);
             coutdownTimer -= 0.1f;
@@ -665,7 +665,7 @@ public class GamePlay : MonoBehaviour
         else
         {
             RefHolder.instance.uICon.gamePanelErorrText.text = "Waiting for Other Player";
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             EndMatchCountdown();
         }
         

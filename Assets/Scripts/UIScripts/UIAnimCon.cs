@@ -14,6 +14,7 @@ public class UIAnimCon : MonoBehaviour
     public Animator signInPanel; 
     public Animator PlayFriendsPanel; 
     public Animator MatchMakingFriendsPanel; 
+    public Animator UserPanel; 
 
     // Start is called before the first frame update
     void Start()
@@ -91,5 +92,13 @@ public class UIAnimCon : MonoBehaviour
     public void MatchMakingFriendsPanelOut()
     {
         MatchMakingFriendsPanel.SetTrigger("PanelOut");
+    }
+    public void UserPanelIn()
+    {
+        UserPanel.SetTrigger("PanelIn");
+    }
+    public void UserPanelOut()
+    {
+        UserPanel.SetTrigger("PanelOut");
     }
 }

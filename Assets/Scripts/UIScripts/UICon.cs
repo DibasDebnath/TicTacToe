@@ -15,7 +15,7 @@ public class UICon : MonoBehaviour
 
     [Header("MainPanel")]
     public Button playBut;
-    public Button optionsBut;
+    public Button userBut;
     public Button exitBut;
 
     [Header("GamePanel")]
@@ -78,31 +78,52 @@ public class UICon : MonoBehaviour
     public TextMeshProUGUI matchMakingFriendsErrorTxt;
     public TextMeshProUGUI matchMakingFriendsRoomCodeTxt;
 
+
+
+    [Header("UserPanel")]
+    public InputField nameInputUser;
+    public Button ChangeNameBut;
+    public Button backButUser;
+    public TextMeshProUGUI emailText;
+    public TextMeshProUGUI matchText;
+    public TextMeshProUGUI winText;
+    
+
+
+
     private void Start()
     {
         exitBut.onClick.AddListener(() => ExitButPress());
         playBut.onClick.AddListener(() => PlayButPress());
-        optionsBut.onClick.AddListener(() => OptionsButPress());
+        userBut.onClick.AddListener(() => UserButPress());
+
         exitButEnd.onClick.AddListener(() => ExitButPressEnd());
         playButEnd.onClick.AddListener(() => StartButPressEnd());
         optionsButEnd.onClick.AddListener(() => OptionsButPressEnd());
+
         playLocalBut.onClick.AddListener(() => PlayLocal());
         playOnlineBut.onClick.AddListener(() => OptionsButPressEnd());
         playFriendsBut.onClick.AddListener(() => PlayFriends());
         playAIBut.onClick.AddListener(() => PlayAI());
         playOptionsBack.onClick.AddListener(() => BackPlayOptions());
+
         signInGoogleBut.onClick.AddListener(() => SignInGoogleButPress());
         signInAnonBut.onClick.AddListener(() => SignInAnonButPress());
         signbackBut.onClick.AddListener(() => SignInBackButPress());
+
         joinRoomBut.onClick.AddListener(() => JoinRoomButPress());
         createRoomBut.onClick.AddListener(() => CreateRoomButPress());
         playFriendsbackBut.onClick.AddListener(() => PlayFriendsBackBut());
+
         readyBut.onClick.AddListener(() => MatchMakingFriendsReadyButPress());
         matchMakingFriendsbackBut.onClick.AddListener(() => MatchMakingFriendsBackButPress());
+
         readyButEnd.onClick.AddListener(() => EndPanelOnlineReadyButPress());
         backButEnd.onClick.AddListener(() => EndPanelOnlineBackButPress());
 
-
+        ChangeNameBut.onClick.AddListener(() => UpdateUserButPress());
+        backButUser.onClick.AddListener(() => UserBackButPress());
+        
 
         RefHolder.instance.audioController.SetAtStart();
     }
@@ -132,13 +153,25 @@ public class UICon : MonoBehaviour
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         Application.Quit();
     }
-    private void OptionsButPress()
+    private void UserButPress()
     {
         if (!takeInput)
         {
             return;
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        if(FirebaseController.instance.user != null)
+        {
+            SetTextOfUserPanel(FirebaseController.instance.user.Email, RefHolder.instance.dataManager.matchValue.ToString(),
+             RefHolder.instance.dataManager.winValue.ToString(), FirebaseController.instance.user.DisplayName);
+
+
+            animCon.UserPanelIn();
+            animCon.MainMenuOut();
+        }
+        
+
+
     }
 
     #endregion
@@ -196,6 +229,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         if (FirebaseController.instance.isSignedIn == false)
         {
             animCon.PlayOptionsOut();
@@ -316,6 +350,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         errorTxt.text = "connecting...";
         GoogleSignInDemo.instance.SignInWithGoogle();
         //takeInput = false;
@@ -334,18 +369,16 @@ public class UICon : MonoBehaviour
         {
             
             takeInput = true;
-            if (RefHolder.instance.dataManager.GetDisplayName() != nameInput.text)
+            if (nameInput.text == "")
             {
-                if(nameInput.text == "")
-                {
-                    FirebaseController.instance.updateDesplayName("player");
-                }
-                else
-                {
-                    FirebaseController.instance.updateDesplayName(nameInput.text);
-                }
-                
+                FirebaseController.instance.updateDesplayName("player");
             }
+            else
+            {
+                FirebaseController.instance.updateDesplayName(nameInput.text);
+            }
+
+
             RefHolder.instance.dataManager.UpdateUserData();
             //Debug.LogError("display name '"+ FirebaseController.instance.user.DisplayName + "'");
             animCon.PlayOptionsIn();
@@ -359,6 +392,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         errorTxt.text = "connecting...";
         FirebaseController.instance.AnonSignIn();
         takeInput = false;
@@ -375,6 +409,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.PlayOptionsIn();
         animCon.SignInOut();
     }
@@ -394,6 +429,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         takeInput = false;
         playFriendsErrorTxt.text = "Connecting...";
         RefHolder.instance.dataManager.CreateRoom();
@@ -426,6 +462,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         takeInput = false;
         playFriendsErrorTxt.text = "Connecting...";
         RefHolder.instance.dataManager.JoinRoom(roomCodeInput.text.ToLower());
@@ -461,6 +498,8 @@ public class UICon : MonoBehaviour
 
     public void PlayFriendsBackBut()
     {
+        
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.PlayFriendsOut();
         animCon.PlayOptionsIn();
     }
@@ -473,6 +512,7 @@ public class UICon : MonoBehaviour
 
     public void MatchMakingFriendsReadyButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         matchMakingFriendsErrorTxt.text = "Waiting Players to be ready";
         RefHolder.instance.dataManager.setUserReady();
     }
@@ -503,6 +543,7 @@ public class UICon : MonoBehaviour
 
     public void MatchMakingFriendsBackButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.dataManager.DeletePreviousRoomIfExists();
         SceneManager.LoadScene("Game");
     }
@@ -517,6 +558,7 @@ public class UICon : MonoBehaviour
 
     public void EndPanelOnlineReadyButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         readyButEnd.interactable = false;
         gamePanelErorrText.text = "";
         matchOnlineEndError.text = "Waiting For Other Player to Be ready";
@@ -526,6 +568,7 @@ public class UICon : MonoBehaviour
 
     public void EndPanelOnlineBackButPress()
     {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.dataManager.SetRoomID("");
         SceneManager.LoadScene("Game");
     }
@@ -548,4 +591,53 @@ public class UICon : MonoBehaviour
 
     #endregion
 
+
+
+
+
+    #region User Panel
+
+    public void SetTextOfUserPanel(string email,string match, string win,string name)
+    {
+        int m = int.Parse(match);
+        int w = int.Parse(win);
+        float percent;
+        if (m != 0 && w != 0)
+        {
+            percent = ( w/m ) * 100;
+        }
+        else
+        {
+            percent = 0f;
+        }
+        
+        string perStr = percent.ToString("0.00");
+        emailText.text = "Email - " + email;
+        matchText.text = "Matches - " + match;
+        winText.text = "Wins - " + win + " ("+ perStr+"%)";
+        nameInputUser.text = name;
+    }
+
+
+
+
+    public void UpdateUserButPress()
+    {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        FirebaseController.instance.updateDesplayName(nameInputUser.text);
+    }
+
+
+    public void UserBackButPress()
+    {
+        RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
+        animCon.UserPanelOut();
+        animCon.MainMenuIn();
+    }
+
+
+
+
+
+    #endregion
 }

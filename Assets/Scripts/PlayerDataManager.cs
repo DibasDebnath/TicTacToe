@@ -43,12 +43,24 @@ public class PlayerDataManager : MonoBehaviour
         GetAllPlayerPrefsValue();
         //PlayerPrefs.DeleteAll();
         //Debug.LogError(GetRoomID());
+        StartCoroutine(DelayFirebaseAction());
+    }
+
+    IEnumerator DelayFirebaseAction()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if(FirebaseController.instance.user != null)
+        {
+            UpdateUserData();
+        }
+        
+        
     }
     public void GetAllPlayerPrefsValue()
     {
-        matchValue = GetMatchValue();
-        winValue = GetWinValue();
-        roomIDValue = GetRoomID();
+        matchValue = LoadMatchValue();
+        winValue = LoadWinValue();
+        roomIDValue = LoadRoomIDValue();
     }
     public void SaveMatchValue(int value)
     {
@@ -134,7 +146,43 @@ public class PlayerDataManager : MonoBehaviour
     #region Firebase
 
 
-    
+    public void GetUserData()
+    {
+        
+        
+        FirebaseController.instance.database.RootReference.Child(USER).OrderByKey().EqualTo(GetUID()).GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("Problem Connecting");
+            }
+            else if (task.IsCompleted)
+            {
+                foreach (var childSnapshot in task.Result.Children)
+                {
+                    if (childSnapshot.Child(GetUID()) == null)
+                    {
+                        Debug.Log("Found Null");
+
+                    }
+                    else
+                    {
+                        
+                        Debug.Log("User Exists");
+                        matchValue = int.Parse(childSnapshot.Child(MATCH).Value.ToString());
+                        winValue = int.Parse(childSnapshot.Child(WIN).Value.ToString());
+                        return;
+
+                    }
+                }
+
+            }
+            
+        });
+        //FirebaseController.instance.database.RootReference.Child(Rooms).Child(roomID).SetRawJsonValueAsync(JsonUtility.ToJson(R));
+    }
+
+
 
     public void UpdateUserData()
     {
@@ -220,7 +268,11 @@ public class PlayerDataManager : MonoBehaviour
                         roomJoined = true;
                         Debug.Log("Room Exists");
                         RefHolder.instance.gamePlay.onlinePlayer = 2;
-                        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).Child(USERTWO).Child(UID).SetValueAsync(GetUID());
+                        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+                        childUpdates[UID] = GetUID();
+                        childUpdates[NAME] = GetDisplayName();
+
+                        FirebaseController.instance.database.RootReference.Child(ROOMS).Child(roomID).Child(USERTWO).Child(UID).UpdateChildrenAsync(childUpdates);
                         //FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).Child(USERTWO).Child(NAME).SetValueAsync(GetDisplayName());
                         //DeletePreviousRoomIfExists();
                         return;
@@ -428,7 +480,16 @@ public class PlayerDataManager : MonoBehaviour
             }
             
         }
+        if (RefHolder.instance.gamePlay.onlinePlayer == RefHolder.instance.gamePlay.currentPlayer)
+        {
+            IncreaseMatchStat(win);
+
+        }
+
         FirebaseController.instance.database.RootReference.Child(ROOMS).Child(GetRoomID()).UpdateChildrenAsync(childUpdates);
+
+
+        
 
     }
 
@@ -490,15 +551,22 @@ public class PlayerDataManager : MonoBehaviour
                     oldDataSnapshot.Child(USERTWO).Child(WIN).Value.ToString());
     }
 
-
+    public void IncreaseMatchStat(bool win)
+    {
+        SetMatchValue(GetMatchValue() + 1);
+        if (win)
+        {
+            SetWinValue(GetWinValue() + 1);
+        }
+    }
 
     #endregion
 
 };
 public class Userdata
 {
-    int match;
-    int win;
+    public int match;
+    public int win;
 
     public Userdata(int m,int w)
     {
