@@ -197,7 +197,7 @@ public class FirebaseController : MonoBehaviour
                     Debug.LogError("UpdateUserProfileAsync encountered an error: " + task.Exception);
                     return;
                 }
-
+                RefHolder.instance.uICon.errorUserPanel.text = "Update Complete";
                 Debug.Log("User Display Name updated successfully. - ' "+ user.DisplayName+"'");
             });
         }

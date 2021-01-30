@@ -87,6 +87,7 @@ public class UICon : MonoBehaviour
     public TextMeshProUGUI emailText;
     public TextMeshProUGUI matchText;
     public TextMeshProUGUI winText;
+    public TextMeshProUGUI errorUserPanel;
     
 
 
@@ -617,6 +618,7 @@ public class UICon : MonoBehaviour
         matchText.text = "Matches - " + match;
         winText.text = "Wins - " + win + " ("+ perStr+"%)";
         nameInputUser.text = name;
+        errorUserPanel.text = "";
     }
 
 

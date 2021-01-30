@@ -167,6 +167,7 @@ public class PlayerDataManager : MonoBehaviour
                     {
                         Debug.Log("Found Null");
                         UpdateUserData();
+                        return;
                     }
                     else
                     {
@@ -188,7 +189,8 @@ public class PlayerDataManager : MonoBehaviour
 
                     }
                 }
-
+                UpdateUserData();
+                return;
             }
             
         });
@@ -425,6 +427,38 @@ public class PlayerDataManager : MonoBehaviour
                 //RefHolder.instance.gamePlay.EndMatch(false);
             }
 
+
+
+            // Set ready false
+            if(RefHolder.instance.gamePlay.onlinePlayer == 1)
+            {
+                if (oldDataSnapshot.Child(USERONE).Child(READY).Value.ToString() == "True" &&
+                args.Snapshot.Child(USERONE).Child(READY).Value.ToString() == "False")
+                {
+                    RefHolder.instance.uICon.matchMakingFriendsErrorTxt.text = "Press Ready";
+                    RefHolder.instance.uICon.readyBut.interactable = true;
+
+                    RefHolder.instance.uICon.readyButEnd.interactable = true;
+                    RefHolder.instance.uICon.gamePanelErorrText.text = "";
+                    RefHolder.instance.uICon.matchOnlineEndError.text = "Press Ready";
+                    SetEndPanelOnlineEnd();
+                }
+            }
+            else
+            {
+                if (oldDataSnapshot.Child(USERTWO).Child(READY).Value.ToString() == "True" &&
+                args.Snapshot.Child(USERTWO).Child(READY).Value.ToString() == "False")
+                {
+                    RefHolder.instance.uICon.matchMakingFriendsErrorTxt.text = "Press Ready";
+                    RefHolder.instance.uICon.readyBut.interactable = true;
+
+                    RefHolder.instance.uICon.readyButEnd.interactable = true;
+                    RefHolder.instance.uICon.gamePanelErorrText.text = "";
+                    RefHolder.instance.uICon.matchOnlineEndError.text = "Press Ready";
+                    SetEndPanelOnlineEnd();
+                }
+            }
+            
 
 
 
