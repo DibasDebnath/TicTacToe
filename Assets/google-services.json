@@ -23,7 +23,15 @@
           }
         },
         {
-          "client_id": "624997912753-sfsdo0ttcvar33tdqcqijm6kdmukh70t.apps.googleusercontent.com",
+          "client_id": "624997912753-pb10mapd6jlpnqvf7osnv265i62pfngm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "Com.WhimsicalConception.TicTacToe",
+            "certificate_hash": "444ddbb376223eec621c8c506613b7a6194d9903"
+          }
+        },
+        {
+          "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -36,7 +44,36 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "624997912753-sfsdo0ttcvar33tdqcqijm6kdmukh70t.apps.googleusercontent.com",
+              "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624997912753:android:7249b02f88e3058f685290",
+        "android_client_info": {
+          "package_name": "com.whimsicalconception.tictactoe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqtYfxnoFJ4Q2CYffxcfbXC2Bjs8_VIYY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
