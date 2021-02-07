@@ -364,7 +364,7 @@ public class UICon : MonoBehaviour
         if(FirebaseController.instance.isSignedIn == false)
         {
             takeInput = true;
-            errorTxt.text = "Connection Error... Try Again";
+            errorTxt.text = "Connection Error. Try Again-" + GoogleSignInDemo.instance.infoText;
         }
         else
         {

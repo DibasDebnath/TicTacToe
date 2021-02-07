@@ -8,51 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:624997912753:android:5a56383a2e0053f0685290",
-        "android_client_info": {
-          "package_name": "Com.WhimsicalConception.TicTacToe"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "624997912753-12etmmt6erqam1tk7c75thsufgvbknoh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "Com.WhimsicalConception.TicTacToe",
-            "certificate_hash": "fad3e9d021649073fe9ed4a0713ec653213496af"
-          }
-        },
-        {
-          "client_id": "624997912753-pb10mapd6jlpnqvf7osnv265i62pfngm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "Com.WhimsicalConception.TicTacToe",
-            "certificate_hash": "444ddbb376223eec621c8c506613b7a6194d9903"
-          }
-        },
-        {
-          "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBqtYfxnoFJ4Q2CYffxcfbXC2Bjs8_VIYY"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:624997912753:android:7249b02f88e3058f685290",
         "android_client_info": {
           "package_name": "com.whimsicalconception.tictactoe"
@@ -60,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
+          "client_id": "624997912753-tov2s5amvk2cfkpo37lv15qrt9h64ut5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whimsicalconception.tictactoe",
+            "certificate_hash": "444ddbb376223eec621c8c506613b7a6194d9903"
+          }
+        },
+        {
+          "client_id": "624997912753-u92h3si59980n94tkbqle062bgngn8hv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -73,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com",
+              "client_id": "624997912753-u92h3si59980n94tkbqle062bgngn8hv.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

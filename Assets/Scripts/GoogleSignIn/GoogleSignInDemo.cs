@@ -17,7 +17,7 @@ public class GoogleSignInDemo : MonoBehaviour
     public string infoText;
     //private string webClientId = "624997912753-sfsdo0ttcvar33tdqcqijm6kdmukh70t.apps.googleusercontent.com";
     //private string webClientId = "624997912753-12etmmt6erqam1tk7c75thsufgvbknoh.apps.googleusercontent.com";
-    private string webClientId = "624997912753-59kq5t4dg4r8i59cj99m8egsjfspvq94.apps.googleusercontent.com";
+    private string webClientId = "624997912753-u92h3si59980n94tkbqle062bgngn8hv.apps.googleusercontent.com";
 
 
     private GoogleSignInConfiguration configuration;
