@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "624997912753-3q68n2srubpl796itdarjjh0s825tr59.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whimsicalconception.tictactoe",
+            "certificate_hash": "2e0a2d83f6c55491a08f39b35784728e73ff37b0"
+          }
+        },
+        {
           "client_id": "624997912753-tov2s5amvk2cfkpo37lv15qrt9h64ut5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
