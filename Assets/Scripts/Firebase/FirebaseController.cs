@@ -153,18 +153,18 @@ public class FirebaseController : MonoBehaviour
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInWithCredentialAsync was canceled.");
-                
+                RefHolder.instance.uICon.lateSignInChecker(false);
                 return;
             }
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
-                
+                RefHolder.instance.uICon.lateSignInChecker(false);
                 return;
             }
 
             user = task.Result;
-            
+            RefHolder.instance.uICon.lateSignInChecker(true);
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 user.DisplayName, user.UserId);
 

@@ -11,7 +11,7 @@ public class UICon : MonoBehaviour
     public UIAnimCon animCon;
 
     public bool takeInput;
-    
+
 
     [Header("MainPanel")]
     public Button playBut;
@@ -88,7 +88,7 @@ public class UICon : MonoBehaviour
     public TextMeshProUGUI matchText;
     public TextMeshProUGUI winText;
     public TextMeshProUGUI errorUserPanel;
-    
+
 
 
 
@@ -124,7 +124,7 @@ public class UICon : MonoBehaviour
 
         ChangeNameBut.onClick.AddListener(() => UpdateUserButPress());
         backButUser.onClick.AddListener(() => UserBackButPress());
-        
+
 
         RefHolder.instance.audioController.SetAtStart();
     }
@@ -137,7 +137,7 @@ public class UICon : MonoBehaviour
         {
             return;
         }
-            
+
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         animCon.MainMenuOut();
         animCon.PlayOptionsIn();
@@ -161,7 +161,7 @@ public class UICon : MonoBehaviour
             return;
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
-        if(FirebaseController.instance.user != null)
+        if (FirebaseController.instance.user != null)
         {
             SetTextOfUserPanel(FirebaseController.instance.user.Email, RefHolder.instance.dataManager.matchValue.ToString(),
              RefHolder.instance.dataManager.winValue.ToString(), FirebaseController.instance.user.DisplayName);
@@ -170,7 +170,7 @@ public class UICon : MonoBehaviour
             animCon.UserPanelIn();
             animCon.MainMenuOut();
         }
-        
+
 
 
     }
@@ -194,7 +194,7 @@ public class UICon : MonoBehaviour
         }
         RefHolder.instance.audioController.Play(RefHolder.instance.audioController.Tap, false);
         RefHolder.instance.gamePlay.AIMode = false;
-        SetGamePanelTextAtStart("Player 1","Player 2","0","0");
+        SetGamePanelTextAtStart("Player 1", "Player 2", "0", "0");
         animCon.PlayOptionsOut();
         animCon.GamePanelIn();
         StartCoroutine(LateStartLocal());
@@ -217,7 +217,7 @@ public class UICon : MonoBehaviour
 
     IEnumerator LateStartLocal()
     {
-        
+
         yield return new WaitForSeconds(0.2f);
         RefHolder.instance.gamePlay.StartGame();
     }
@@ -234,11 +234,11 @@ public class UICon : MonoBehaviour
         if (FirebaseController.instance.user == null)
         {
             animCon.PlayOptionsOut();
-            if(RefHolder.instance.dataManager.GetDisplayName() != "")
+            if (RefHolder.instance.dataManager.GetDisplayName() != "")
             {
                 nameInput.text = RefHolder.instance.dataManager.GetDisplayName();
             }
-            
+
             animCon.SignInIn();
         }
         else
@@ -284,7 +284,7 @@ public class UICon : MonoBehaviour
     }
     IEnumerator LateStartEnd()
     {
-        
+
         yield return new WaitForSeconds(0.2f);
         RefHolder.instance.gamePlay.StartGame();
     }
@@ -331,7 +331,7 @@ public class UICon : MonoBehaviour
 
 
 
-    public void SetGamePanelTextAtStart(string player1,string player2,string player1W,string player2W)
+    public void SetGamePanelTextAtStart(string player1, string player2, string player1W, string player2W)
     {
         playerOneName.text = player1;
         playerTwoName.text = player2;
@@ -355,20 +355,20 @@ public class UICon : MonoBehaviour
         errorTxt.text = "connecting...";
         GoogleSignInDemo.instance.SignInWithGoogle();
         //takeInput = false;
-        StartCoroutine(lateSignInCheck());
+        //StartCoroutine(lateSignInCheck());
     }
 
     IEnumerator lateSignInCheck()
     {
         yield return new WaitForSeconds(2f);
-        if(FirebaseController.instance.isSignedIn == false)
+        if (FirebaseController.instance.isSignedIn == false)
         {
             takeInput = true;
-            errorTxt.text = "Connection Error. Try Again-" + GoogleSignInDemo.instance.infoText;
+            errorTxt.text = "Connection Error. Try Again";
         }
         else
         {
-            
+
             takeInput = true;
             if (nameInput.text == "")
             {
@@ -386,6 +386,31 @@ public class UICon : MonoBehaviour
             animCon.SignInOut();
         }
     }
+    public void lateSignInChecker(bool signin)
+    {
+        if (signin == false)
+        {
+            takeInput = true;
+            errorTxt.text = "Connection Error. Try Again";
+        }
+        else
+        {
+            takeInput = true;
+            if (nameInput.text == "")
+            {
+                FirebaseController.instance.updateDesplayName("player");
+            }
+            else
+            {
+                FirebaseController.instance.updateDesplayName(nameInput.text);
+            }
+            //RefHolder.instance.dataManager.UpdateUserData();
+            //Debug.LogError("display name '"+ FirebaseController.instance.user.DisplayName + "'");
+            animCon.PlayOptionsIn();
+            animCon.SignInOut();
+        }
+    }
+
 
     public void SignInAnonButPress()
     {
